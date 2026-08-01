@@ -1,0 +1,37 @@
+{
+  "name": "rainforest",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Forest Platform specification package and supporting schemas",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/src/server.js",
+    "dev": "tsx watch src/server.ts",
+    "migrate": "tsx scripts/migrate.ts",
+    "seed": "tsx scripts/seed-dev.ts",
+    "gaps": "tsx scripts/report-contract-gaps.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "spec:validate": "python docs/forest_platform_machine_readable_release0/forest_platform_release0/scripts/validate_specifications.py",
+    "db:generate": "drizzle-kit generate",
+    "db:introspect": "drizzle-kit introspect",
+    "up": "docker compose up -d --build",
+    "down": "docker compose down",
+    "logs": "docker compose logs -f api"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "drizzle-orm": "^0.45.2",
+    "fastify": "^5.11.0",
+    "postgres": "^3.4.9",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.23.1",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,81 @@
+services:
+  db:
+    # ADR-008: PostgreSQL + PostGIS is the system of record. PostGIS is present
+    # from the start because 0001_foundation.sql creates the extension, even
+    # though no spatial column exists until GEO-001 gets its contract.
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: forest_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # -h 127.0.0.1 forces a TCP check. Without it pg_isready succeeds on the
+      # Unix socket during initdb, while the temporary server is still refusing
+      # TCP connections — dependents then start too early.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d forest_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  # Applies the approved SQL from the specification package, then exits.
+  migrate:
+    build:
+      context: .
+      target: runtime
+    environment:
+      NODE_ENV: development
+      AUTH_MODE: dev-headers
+      DATABASE_URL: postgres://postgres:postgres@db:5432/forest_platform
+    command: ["node", "dist/scripts/migrate.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # Development-only. Not part of `up`; run explicitly:
+  #   docker compose run --rm seed
+  seed:
+    build:
+      context: .
+      target: runtime
+    profiles: ["seed"]
+    environment:
+      NODE_ENV: development
+      AUTH_MODE: dev-headers
+      DATABASE_URL: postgres://postgres:postgres@db:5432/forest_platform
+      INSTANCE_ID: 00000000-0000-7000-8000-000000000001
+    command: ["node", "dist/scripts/seed-dev.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      target: runtime
+    environment:
+      # Development-only: the header-based principal shim is active. The image
+      # refuses to run this mode under NODE_ENV=production.
+      NODE_ENV: development
+      AUTH_MODE: dev-headers
+      DATABASE_URL: postgres://postgres:postgres@db:5432/forest_platform
+      INSTANCE_ID: 00000000-0000-7000-8000-000000000001
+      SERVICE_NAME: forest-platform-api
+      LOG_LEVEL: info
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:

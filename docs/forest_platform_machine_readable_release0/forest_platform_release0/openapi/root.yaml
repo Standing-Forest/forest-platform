@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  title: Forest Platform API
+  version: 0.1.0
+servers:
+  - url: /api/v1
+paths:
+  /projects:
+    post:
+      operationId: createProject
+      summary: Create a forest project
+      x-domain-owner: forests
+      x-requirement-ids: [ARCH-001]
+      x-risk-level: medium
+      x-audit-required: true
+      responses:
+        '201':
+          description: Created
+  /parcels/{parcelId}/boundaries:
+    post:
+      operationId: submitParcelBoundary
+      summary: Submit a parcel boundary for review
+      x-domain-owner: forests
+      x-requirement-ids: [GEO-001, EVID-001]
+      x-risk-level: high
+      x-audit-required: true
+      x-idempotency-required: true
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '202':
+          description: Accepted
+  /ai/query:
+    post:
+      operationId: queryGroundedAssistant
+      summary: Ask a grounded AI assistant
+      x-domain-owner: ai
+      x-requirement-ids: [AI-002, AI-004]
+      x-grounding-required: true
+      x-citation-required: true
+      x-audit-required: true
+      responses:
+        '200':
+          description: Grounded response
+        '422':
+          description: Grounding insufficient

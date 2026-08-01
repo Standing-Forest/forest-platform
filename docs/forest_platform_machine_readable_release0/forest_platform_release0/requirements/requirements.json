@@ -1,0 +1,104 @@
+{
+  "version": "0.1.0",
+  "status": "baseline",
+  "requirements": [
+    {
+      "id": "ARCH-001",
+      "title": "Canonical geographic hierarchy",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "architecture"
+    },
+    {
+      "id": "ARCH-003",
+      "title": "Bitemporal historical records",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "architecture"
+    },
+    {
+      "id": "ARCH-005",
+      "title": "Transactional outbox",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "architecture"
+    },
+    {
+      "id": "GEO-001",
+      "title": "Append-only parcel boundaries",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "forests"
+    },
+    {
+      "id": "TREE-001",
+      "title": "Permanent tree history",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "forests"
+    },
+    {
+      "id": "EVID-001",
+      "title": "Material claims trace to evidence",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "evidence"
+    },
+    {
+      "id": "EVID-002",
+      "title": "Immutable cryptographically hashed originals",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "evidence"
+    },
+    {
+      "id": "CONSENT-001",
+      "title": "Record-level permitted uses",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "consent"
+    },
+    {
+      "id": "FIN-001",
+      "title": "Append-only double-entry ledger",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "finance"
+    },
+    {
+      "id": "AI-002",
+      "title": "Grounded factual answers with citations",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "ai"
+    },
+    {
+      "id": "AI-004",
+      "title": "Abstain when evidence is insufficient",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "ai"
+    },
+    {
+      "id": "DEV-AI-001",
+      "title": "Coding agents may not invent missing contracts",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "developer-experience"
+    },
+    {
+      "id": "SEC-006",
+      "title": "Tenant isolation",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "security"
+    },
+    {
+      "id": "TEST-018",
+      "title": "Release certification package",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "quality"
+    }
+  ]
+}

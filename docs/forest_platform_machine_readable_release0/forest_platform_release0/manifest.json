@@ -1,0 +1,54 @@
+{
+  "package": "forest-platform-release0",
+  "version": "0.1.0",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "8ac0d416b5404f28587b963c9e74f9373d230b6d66a8979475dca0b0c4d888d4"
+    },
+    {
+      "path": "adr/registry.json",
+      "sha256": "b88858c2b6716523f7df92009a1424b6ed835f67d42889eb78c66c493c591566"
+    },
+    {
+      "path": "database/0001_foundation.sql",
+      "sha256": "24702af54cb3474d61808d76011d15c666ba0168d12a00b600ae4cda0a50ff43"
+    },
+    {
+      "path": "database/schema.foundation.ts",
+      "sha256": "1d47ff7059edab8c973366363ead1da8cc521385a637725744850d3c59aa19b7"
+    },
+    {
+      "path": "errors/errors.json",
+      "sha256": "af957a50ae0fdcab3f40324f9732f5cdc14fbbd321e320c3d0f2c9820691d670"
+    },
+    {
+      "path": "events/envelope/domain-event.schema.json",
+      "sha256": "d4c6266a662cd42ff161e19f6d93f49d23698f9161d052defe4c6a83d52d73a9"
+    },
+    {
+      "path": "openapi/root.yaml",
+      "sha256": "ae300104d325cd4f8b35fbdf2c8bf41b1370e62e777b283b3f39dfe261034377"
+    },
+    {
+      "path": "permissions/permissions.json",
+      "sha256": "5c6466897dfcb5d4624a75c83dec333ed1625f8ac6083e792a13190d87d777b5"
+    },
+    {
+      "path": "requirements/requirements.json",
+      "sha256": "4bc55bb20fd290d5fa4df530b0eb191b6680c58fcf50078c124aaaf5c30dc73c"
+    },
+    {
+      "path": "requirements/traceability.csv",
+      "sha256": "c391ff579b95c0b664a1d30b9953f23a373dcb8b3919636dff72c30f48560227"
+    },
+    {
+      "path": "schemas/core/money.schema.json",
+      "sha256": "ce35e26dbab2f0584fc9764fe5ace56d725552172d944bf891eb579b2b60cb44"
+    },
+    {
+      "path": "scripts/validate_specifications.py",
+      "sha256": "119248103c8e945db2d624376fad91c51042aeefd95c2d45103a425e639c60b8"
+    }
+  ]
+}

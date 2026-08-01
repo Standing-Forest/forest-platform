@@ -1,0 +1,80 @@
+{
+  "version": "0.1.0",
+  "adrs": [
+    {
+      "id": "ADR-001",
+      "title": "Canonical domain hierarchy",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-005",
+      "title": "Bitemporal historical records",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-006",
+      "title": "Immutable domain events",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-008",
+      "title": "PostgreSQL and PostGIS authority",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-010",
+      "title": "Transactional outbox",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-011",
+      "title": "Immutable object storage and provenance",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-014",
+      "title": "Hybrid authorization",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-016",
+      "title": "Consent and cultural governance",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-017",
+      "title": "Specialized grounded AI agents",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-019",
+      "title": "UUIDv7 identifiers",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-020",
+      "title": "Modular monolith",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-026",
+      "title": "Append-only double-entry ledger",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-027",
+      "title": "Integer money and explicit FX",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-028",
+      "title": "Offline-first field architecture",
+      "status": "approved"
+    },
+    {
+      "id": "ADR-029",
+      "title": "Evidence provenance requirement",
+      "status": "approved"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "version": "0.1.0",
+  "errors": [
+    {
+      "code": "PARCEL_BOUNDARY_INVALID",
+      "httpStatus": 422,
+      "domain": "forests",
+      "retryable": false,
+      "requirementIds": [
+        "GEO-001"
+      ]
+    },
+    {
+      "code": "RESOURCE_VERSION_MISMATCH",
+      "httpStatus": 412,
+      "domain": "core",
+      "retryable": true,
+      "requirementIds": [
+        "ARCH-003"
+      ]
+    },
+    {
+      "code": "EVIDENCE_CHECKSUM_MISMATCH",
+      "httpStatus": 422,
+      "domain": "evidence",
+      "retryable": false,
+      "requirementIds": [
+        "EVID-002"
+      ]
+    },
+    {
+      "code": "LEDGER_TRANSACTION_UNBALANCED",
+      "httpStatus": 422,
+      "domain": "finance",
+      "retryable": false,
+      "requirementIds": [
+        "FIN-001"
+      ]
+    },
+    {
+      "code": "AI_GROUNDING_INSUFFICIENT",
+      "httpStatus": 422,
+      "domain": "ai",
+      "retryable": true,
+      "requirementIds": [
+        "AI-002",
+        "AI-004"
+      ]
+    },
+    {
+      "code": "SPECIFICATION_CONTRACT_MISSING",
+      "httpStatus": 409,
+      "domain": "developer-experience",
+      "retryable": false,
+      "requirementIds": [
+        "DEV-AI-001"
+      ]
+    }
+  ]
+}

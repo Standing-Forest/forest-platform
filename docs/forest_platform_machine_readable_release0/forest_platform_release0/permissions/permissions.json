@@ -1,0 +1,68 @@
+{
+  "version": "0.1.0",
+  "permissions": [
+    {
+      "code": "project.create",
+      "resourceType": "project",
+      "action": "create",
+      "riskLevel": "medium",
+      "requirementIds": [
+        "ARCH-001"
+      ]
+    },
+    {
+      "code": "parcel.submit_boundary",
+      "resourceType": "parcel_boundary",
+      "action": "submit",
+      "riskLevel": "high",
+      "requirementIds": [
+        "GEO-001",
+        "EVID-001"
+      ]
+    },
+    {
+      "code": "parcel.approve_boundary",
+      "resourceType": "parcel_boundary",
+      "action": "approve",
+      "riskLevel": "critical",
+      "stepUpAuthentication": "aal3",
+      "approvalPolicy": "dual_control",
+      "requirementIds": [
+        "GEO-001",
+        "SEC-006"
+      ]
+    },
+    {
+      "code": "tree.register",
+      "resourceType": "tree",
+      "action": "create",
+      "riskLevel": "medium",
+      "requirementIds": [
+        "TREE-001",
+        "EVID-001"
+      ]
+    },
+    {
+      "code": "finance.payout.approve",
+      "resourceType": "payout",
+      "action": "approve",
+      "riskLevel": "critical",
+      "stepUpAuthentication": "aal3",
+      "approvalPolicy": "dual_control",
+      "requirementIds": [
+        "FIN-001"
+      ]
+    },
+    {
+      "code": "ai.agent.publish",
+      "resourceType": "ai_agent_version",
+      "action": "publish",
+      "riskLevel": "high",
+      "approvalPolicy": "ai_release_review",
+      "requirementIds": [
+        "AI-002",
+        "AI-004"
+      ]
+    }
+  ]
+}

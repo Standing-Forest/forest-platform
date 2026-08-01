@@ -1,0 +1,6 @@
+requirement_id,adr_ids,api,database,event,test
+ARCH-001,ADR-001,POST /projects,forests.projects,ForestProjectCreated,TEST-DOMAIN-001
+GEO-001,ADR-005;ADR-008,POST /parcels/{parcelId}/boundaries,forests.parcel_boundaries,ParcelBoundarySubmitted,TEST-GEO-001
+EVID-002,ADR-011;ADR-029,POST /evidence/assets/{id}/complete,evidence.assets,EvidenceAssetStored,TEST-EVID-002
+FIN-001,ADR-026,POST /internal/ledger-transactions,finance.entries,LedgerTransactionPosted,TEST-FIN-001
+AI-002,ADR-017;ADR-029,POST /ai/query,ai.citations,AIResponseGenerated,TEST-AI-001
