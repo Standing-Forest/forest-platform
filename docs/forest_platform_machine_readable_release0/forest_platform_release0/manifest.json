@@ -40,7 +40,7 @@
     },
     {
       "path": "requirements/traceability.csv",
-      "sha256": "c391ff579b95c0b664a1d30b9953f23a373dcb8b3919636dff72c30f48560227"
+      "sha256": "bed5e0b019ffefd4c9999d921dc88d1336a52886c86cabef1c9df05e65962cb6"
     },
     {
       "path": "schemas/core/money.schema.json",
