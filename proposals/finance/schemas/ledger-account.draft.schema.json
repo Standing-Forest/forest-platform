@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/finance/ledger-account.draft.schema.json",
+  "title": "LedgerAccount (DRAFT)",
+  "description": "One account in the chart of accounts (FIN-001). DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["accountId", "homeInstanceId", "code", "name", "accountType", "normalBalance", "currency"],
+  "properties": {
+    "accountId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "code": { "type": "string", "description": "Stable account code, unique within a tenant." },
+    "name": { "type": "string" },
+    "accountType": { "enum": ["asset", "liability", "equity", "revenue", "expense"] },
+    "normalBalance": {
+      "enum": ["debit", "credit"],
+      "description": "Stored rather than inferred so a report can never disagree with the ledger about which direction is 'more'. Assets and expenses must be debit; the rest credit."
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "An account holds one currency. Cross-currency movement goes through an explicit fx_conversion transaction (FIN-005)."
+    },
+    "partyId": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "Set for accounts belonging to a party, such as a payee's obligation account. Null for organizational accounts."
+    },
+    "active": { "type": "boolean", "default": true }
+  },
+  "_note": "Suggested minimal chart: 1000 provider balance (asset), 2000 owed to landowner (liability), 4000 sponsorship revenue (revenue), 5000 provider fees (expense). The actual chart is an accounting decision, not an engineering one."
+}

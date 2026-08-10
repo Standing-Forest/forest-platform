@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/governance/approval-request.draft.schema.json",
+  "title": "ApprovalRequest (DRAFT)",
+  "description": "Something awaiting a decision. Raised by the Forest Committee Chair, decided by the President. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvalRequestId",
+    "homeInstanceId",
+    "permissionCode",
+    "policyCode",
+    "resourceType",
+    "resourceVersionId",
+    "requestedBy",
+    "requestedAt",
+    "expiresAt",
+    "state"
+  ],
+  "properties": {
+    "approvalRequestId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "permissionCode": {
+      "type": "string",
+      "description": "The permission being exercised, e.g. parcel.approve_boundary."
+    },
+    "policyCode": { "type": "string" },
+    "resourceType": { "type": "string", "examples": ["parcel_boundary", "payout"] },
+    "resourceVersionId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "GOV-004: the exact immutable version. Approving a parcel rather than a specific boundary version would let a submitter replace the boundary afterwards and inherit the approval."
+    },
+    "requestedBy": { "type": "string", "format": "uuid" },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "justification": {
+      "type": ["string", "null"],
+      "description": "Why the approver should say yes. Optional in the schema, but an approver with no context is rubber-stamping."
+    },
+    "state": { "enum": ["pending", "granted", "rejected", "expired", "superseded"] },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "decidedAt": { "type": ["string", "null"], "format": "date-time" }
+  }
+}

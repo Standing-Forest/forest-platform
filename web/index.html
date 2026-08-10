@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forest Platform</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="demo-banner">
+      <strong>Preview build.</strong>
+      Sections marked <span class="badge demo">Demo</span> use sample data — the platform has no
+      approved contract for them yet. Sections marked <span class="badge live">Live</span> talk to
+      the real backend.
+    </div>
+
+    <header class="site">
+      <div class="bar">
+        <div class="brand">
+          <span class="mark" id="brand-mark">🌿</span>
+          <span id="brand-name">Forest Platform</span>
+        </div>
+        <nav class="tabs" id="tabs">
+          <button data-view="donor" aria-current="true">Supporters</button>
+          <button data-view="staff">Staff console</button>
+          <button data-view="field">Field</button>
+          <button data-view="status">Platform status</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="view"></main>
+
+    <footer class="site">
+      <div class="bar">
+        <span id="footer-org">Forest Platform</span> ·
+        <span id="footer-contact"></span> ·
+        Branding is editable in <code class="mono">web/branding.json</code>
+      </div>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

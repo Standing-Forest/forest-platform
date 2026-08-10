@@ -1,0 +1,69 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into requirements.json only after review.",
+  "version": "0.1.0-draft",
+  "requirements": [
+    {
+      "id": "PARTY-001",
+      "title": "Party records are bitemporal and tenant-scoped",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "field-operations",
+      "rationale": "Parcels, consent and payments all attach to a person or organization. Without a party record there is nothing to attach them to. Bitemporality (ARCH-003) lets the platform answer what it believed about a party on the day a payment was authorized, not merely what is true now.",
+      "relatedAdrs": ["ADR-005", "ADR-019", "ADR-020"]
+    },
+    {
+      "id": "PARTY-002",
+      "title": "Identity evidence is referenced, never embedded",
+      "priority": "high",
+      "status": "proposed",
+      "owner": "evidence",
+      "rationale": "EVID-002 requires immutable cryptographically hashed originals. Identity documents live in evidence storage and are referenced by id and checksum, so personal documents are never copied into domain tables.",
+      "relatedAdrs": ["ADR-011", "ADR-029"]
+    },
+    {
+      "id": "PARTY-003",
+      "title": "Party reads are confined to the owning tenant",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "security",
+      "rationale": "This would be the platform's first operation reading an existing tenant-owned resource. SEC-006's cross-tenant check is presently unreachable from HTTP because every declared operation either creates a resource or is a stub.",
+      "relatedAdrs": ["ADR-014"]
+    },
+    {
+      "id": "LAND-001",
+      "title": "Land roles distinguish farmer, landowner and land controller",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "field-operations",
+      "rationale": "The party working the land is frequently not the party who may commit it. Community and customary tenure often place authority with a controller who is neither the registered owner nor the farmer. Collapsing these three into one concept would either exclude customary tenure or misrepresent it as ownership.",
+      "relatedAdrs": ["ADR-005", "ADR-016"]
+    },
+    {
+      "id": "LAND-002",
+      "title": "Authority to commit land is established before conservation begins",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "field-operations",
+      "rationale": "Paying for conservation on land the counterparty had no authority to commit exposes the organization and the community to serious harm. A farmer role alone does not confer that authority; a landowner or land_controller role does.",
+      "relatedAdrs": ["ADR-014", "ADR-029"]
+    },
+    {
+      "id": "CONSENT-002",
+      "title": "Enrollment requires a recorded consent grant naming permitted uses",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "consent",
+      "rationale": "CONSENT-001 requires record-level permitted uses. Enrollment is the moment consent is obtained, so a party must not enter the platform without a grant naming what was agreed to, by whom, and in what language.",
+      "relatedAdrs": ["ADR-016"]
+    },
+    {
+      "id": "CONSENT-003",
+      "title": "Consent withdrawal halts processing without destroying history",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "consent",
+      "rationale": "Consent that cannot be withdrawn is not consent. Withdrawal ends a grant's validity and blocks all future processing, while append-only history (ARCH-003) is preserved. OPEN QUESTION: this may not satisfy a legal right to erasure in every jurisdiction — see the proposal README.",
+      "relatedAdrs": ["ADR-005", "ADR-016"]
+    }
+  ]
+}

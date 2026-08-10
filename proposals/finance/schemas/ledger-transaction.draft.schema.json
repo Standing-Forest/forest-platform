@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/finance/ledger-transaction.draft.schema.json",
+  "title": "LedgerTransaction (DRAFT)",
+  "description": "A balanced set of entries recording one movement of value (FIN-001, FIN-002). Append-only: a mistake is corrected by a reversing transaction, never by editing this one. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "transactionId",
+    "homeInstanceId",
+    "transactionType",
+    "description",
+    "entries",
+    "postedBy",
+    "occurredAt"
+  ],
+  "properties": {
+    "transactionId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "transactionType": {
+      "enum": [
+        "sponsorship_payment",
+        "payout",
+        "refund",
+        "chargeback",
+        "fee",
+        "adjustment",
+        "fx_conversion"
+      ]
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "sourceReference": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "description": "What in the outside world this records.",
+      "required": ["type", "id"],
+      "properties": {
+        "type": { "type": "string", "examples": ["payment", "payout_batch", "sponsorship"] },
+        "id": { "type": "string", "format": "uuid" }
+      }
+    },
+    "reversesTransactionId": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "FIN-003. Set when this transaction corrects an earlier one. The original always stands."
+    },
+    "fx": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["rate", "source", "rateAt"],
+      "description": "FIN-005: all three fields together or none. A conversion whose rate cannot be reproduced later is not auditable.",
+      "properties": {
+        "rate": { "type": "number", "exclusiveMinimum": 0 },
+        "source": { "type": "string", "examples": ["ecb.europa.eu", "provider"] },
+        "rateAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 2,
+      "description": "Must sum to zero per currency (FIN-002), enforced by a deferred database constraint. Two lines minimum: a single-sided entry is not double-entry.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["accountId", "amountMinorUnits", "currency"],
+        "properties": {
+          "accountId": { "type": "string", "format": "uuid" },
+          "amountMinorUnits": {
+            "type": "integer",
+            "description": "ADR-027: integer minor units, never floating point. Positive is a debit, negative a credit."
+          },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "memo": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "postedBy": { "type": "string", "format": "uuid" },
+    "occurredAt": { "type": "string", "format": "date-time" }
+  }
+}

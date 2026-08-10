@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/parties/party.draft.schema.json",
+  "title": "Party (DRAFT)",
+  "description": "A person or organization known to the platform. Identity is recorded once here; what they are in relation to a piece of land is a land role, not a property of this record. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "partyId",
+    "homeInstanceId",
+    "partyType",
+    "displayName",
+    "dataClassification",
+    "validFrom"
+  ],
+  "properties": {
+    "partyId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUIDv7 (ADR-019)."
+    },
+    "homeInstanceId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning tenant (SEC-006)."
+    },
+    "partyType": {
+      "enum": ["person", "organization"],
+      "description": "A cooperative, association or council is an organization. Modeling it as a person would misrepresent collective land control."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "As the party gives it. No assumption of given/family name order."
+    },
+    "community": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Settlement or community the party identifies with. Free text: administrative divisions are unreliable at this scale."
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "All optional. Many smallholders have no email, and a phone may be shared across a household.",
+      "properties": {
+        "phone": { "type": "string", "maxLength": 40 },
+        "email": { "type": "string", "format": "email" },
+        "preferredLanguage": {
+          "type": "string",
+          "description": "BCP 47 tag. Required in practice for consent to be meaningful."
+        }
+      }
+    },
+    "identityEvidence": {
+      "type": "array",
+      "description": "References into evidence storage (PARTY-002). Never the documents themselves.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidenceAssetId", "checksumSha256", "kind"],
+        "properties": {
+          "evidenceAssetId": { "type": "string", "format": "uuid" },
+          "checksumSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "kind": {
+            "type": "string",
+            "description": "OPEN QUESTION: left as free text deliberately. Enumerating document types across jurisdictions is a research task, and a wrong enum would block legitimate enrollment."
+          }
+        }
+      }
+    },
+    "dataClassification": {
+      "enum": ["confidential", "restricted", "cultural_restricted"],
+      "description": "Drawn from the approved event envelope's vocabulary. A party record is never public or internal. OPEN QUESTION: cultural_restricted (ADR-016) may be mandatory for Indigenous communities."
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Real-world validity start (ARCH-003)."
+    },
+    "validTo": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Null while current."
+    }
+  },
+  "_notDefinedDeliberately": {
+    "nationalIdNumber": "Excluded. High-harm identifier; needs a separate decision with legal input.",
+    "bankDetails": "Excluded. Belongs with FIN-001 payments, which has no contract.",
+    "homeLocation": "Excluded. Geolocating a person's home endangers them in contested-tenure settings.",
+    "dateOfBirth": "Excluded until a stated purpose requires it."
+  }
+}

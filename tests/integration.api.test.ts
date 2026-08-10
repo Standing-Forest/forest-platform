@@ -59,7 +59,10 @@ const authHeaders = (perms: string) => ({
 
 after(async () => {
   if (reachable) {
-    await db.delete(outbox);
+    // Scoped to this file's tenant. An unqualified delete would wipe events
+    // belonging to other test files running in parallel.
+    const own = await db.select().from(projects).where(eq(projects.homeInstanceId, tenantId));
+    for (const row of own) await db.delete(outbox).where(eq(outbox.aggregateId, row.id));
     await db.delete(projects).where(eq(projects.homeInstanceId, tenantId));
     await db.delete(instances).where(eq(instances.id, tenantId));
     await app?.close();
@@ -112,6 +115,35 @@ describe("POST /api/v1/projects", { skip: !reachable }, () => {
     assert.equal(rows.length, 0);
   });
 
+  it("returns 409, not 500, when publicId is already taken", async () => {
+    const publicId = `dup-${newId().slice(0, 8)}`;
+    const payload = { publicId, leadOrganizationId: orgId };
+
+    const first = await app.inject({
+      method: "POST",
+      url: "/api/v1/projects",
+      headers: authHeaders("project.create"),
+      payload,
+    });
+    assert.equal(first.statusCode, 201);
+
+    const second = await app.inject({
+      method: "POST",
+      url: "/api/v1/projects",
+      headers: authHeaders("project.create"),
+      payload,
+    });
+    assert.equal(second.statusCode, 409);
+    assert.equal(second.json().code, "RESOURCE_ALREADY_EXISTS");
+    assert.equal(second.json().details.constraint, "projects_public_id_unique");
+
+    // The conflict must not have left a second row or a stray event.
+    const rows = await db.select().from(projects).where(eq(projects.publicId, publicId));
+    assert.equal(rows.length, 1);
+    const events = await db.select().from(outbox).where(eq(outbox.aggregateId, rows[0]!.id));
+    assert.equal(events.length, 1);
+  });
+
   it("returns 403 without the permission", async () => {
     const response = await app.inject({
       method: "POST",
@@ -135,22 +167,32 @@ describe("POST /api/v1/projects", { skip: !reachable }, () => {
 });
 
 describe("outbox publisher", { skip: !reachable }, () => {
-  it("marks events published and is idempotent", async () => {
-    const first = await publishBatch({
-      db,
-      transport: loggingTransport(() => {}),
-      batchSize: 100,
-      pollIntervalMs: 0,
+  it("marks an event published and will not publish it twice", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/v1/projects",
+      headers: authHeaders("project.create"),
+      payload: { publicId: `pub-${newId().slice(0, 8)}`, leadOrganizationId: orgId },
     });
-    assert.ok(first >= 0);
+    assert.equal(response.statusCode, 201);
+    const aggregateId = response.json().id;
 
-    const second = await publishBatch({
-      db,
-      transport: loggingTransport(() => {}),
-      batchSize: 100,
-      pollIntervalMs: 0,
-    });
-    assert.equal(second, 0, "already-published events must not publish twice");
+    const run = () =>
+      publishBatch({ db, transport: loggingTransport(() => {}), batchSize: 100, pollIntervalMs: 0 });
+
+    await run();
+    const [afterFirst] = await db.select().from(outbox).where(eq(outbox.aggregateId, aggregateId));
+    assert.ok(afterFirst?.publishedAt, "event should be marked published");
+
+    // Asserted on this specific row rather than a global count, so parallel
+    // test files creating their own events cannot make this flap.
+    await run();
+    const [afterSecond] = await db.select().from(outbox).where(eq(outbox.aggregateId, aggregateId));
+    assert.deepEqual(
+      afterSecond?.publishedAt,
+      afterFirst.publishedAt,
+      "a published event must not be republished",
+    );
   });
 });
 
@@ -186,6 +228,29 @@ describe("unimplemented operations refuse rather than guess", { skip: !reachable
     });
     assert.equal(withKey.statusCode, 409);
     assert.equal(withKey.json().code, "SPECIFICATION_CONTRACT_MISSING");
+  });
+});
+
+describe("contract gap reporting", { skip: !reachable }, () => {
+  it("CONTRACT-GAPS.md matches what the running app reports", async () => {
+    const { readFileSync } = await import("node:fs");
+    const response = await app.inject({ method: "GET", url: "/internal/contract-gaps" });
+    const live: number = response.json().gaps.length;
+
+    const doc = readFileSync("CONTRACT-GAPS.md", "utf8");
+    const declared = Number(/^## (\d+) open gaps$/m.exec(doc)?.[1]);
+
+    // The report script must import every module that registers a gap. When it
+    // misses one, the file silently under-reports — run `npm run gaps`.
+    assert.equal(
+      declared,
+      live,
+      `CONTRACT-GAPS.md declares ${declared} gaps but the app reports ${live}`,
+    );
+
+    for (const gap of response.json().gaps as Array<{ operation: string }>) {
+      assert.ok(doc.includes(gap.operation), `CONTRACT-GAPS.md is missing "${gap.operation}"`);
+    }
   });
 });
 

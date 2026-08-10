@@ -1,0 +1,54 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into errors.json only after review.",
+  "version": "0.1.0-draft",
+  "errors": [
+    {
+      "code": "APPROVAL_REQUIRED",
+      "httpStatus": 409,
+      "domain": "security",
+      "retryable": true,
+      "requirementIds": ["GOV-002"],
+      "_note": "The operation carries an approvalPolicy and no granted approval exists. Retryable once approval is granted. This replaces the SPECIFICATION_CONTRACT_MISSING the platform currently returns for every dual-control permission."
+    },
+    {
+      "code": "APPROVAL_SELF_NOT_PERMITTED",
+      "httpStatus": 403,
+      "domain": "security",
+      "retryable": false,
+      "requirementIds": ["GOV-003"],
+      "_note": "The requester attempted to decide their own request. Separation of duties."
+    },
+    {
+      "code": "APPROVAL_ROLE_NOT_AUTHORIZED",
+      "httpStatus": 403,
+      "domain": "security",
+      "retryable": false,
+      "requirementIds": ["GOV-001", "GOV-002"],
+      "_note": "The decider holds no staff role eligible for this policy. Under dual_control only the President may approve."
+    },
+    {
+      "code": "APPROVAL_ALREADY_DECIDED",
+      "httpStatus": 409,
+      "domain": "security",
+      "retryable": false,
+      "requirementIds": ["GOV-005"],
+      "_note": "This person has already decided on this request. Decisions are append-only and never revised."
+    },
+    {
+      "code": "APPROVAL_EXPIRED",
+      "httpStatus": 409,
+      "domain": "security",
+      "retryable": false,
+      "requirementIds": ["GOV-002"],
+      "_note": "The request passed its expiry. Stale consent is not consent; raise a new request."
+    },
+    {
+      "code": "APPROVAL_RESOURCE_CHANGED",
+      "httpStatus": 409,
+      "domain": "security",
+      "retryable": false,
+      "requirementIds": ["GOV-004"],
+      "_note": "The resource version named in the approval is no longer current — the approve-then-swap case."
+    }
+  ]
+}

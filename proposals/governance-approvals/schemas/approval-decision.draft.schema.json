@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/governance/approval-decision.draft.schema.json",
+  "title": "ApprovalDecision (DRAFT)",
+  "description": "One person's decision on one request. Append-only: never updated, never deleted. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvalDecisionId",
+    "homeInstanceId",
+    "approvalRequestId",
+    "decidedBy",
+    "roleHeld",
+    "decision",
+    "assuranceLevel",
+    "decidedAt"
+  ],
+  "properties": {
+    "approvalDecisionId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "approvalRequestId": { "type": "string", "format": "uuid" },
+    "decidedBy": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Must not be the requester (GOV-003), enforced by a database trigger as well as in code."
+    },
+    "roleHeld": {
+      "enum": ["forest_committee_chair", "president", "field_worker", "administrator"],
+      "description": "The office held at the moment of decision, stored on the decision itself. If the President changes next year, the history of this decision must not change with them."
+    },
+    "decision": { "enum": ["approve", "reject"] },
+    "reason": {
+      "type": ["string", "null"],
+      "description": "Required when rejecting: a refusal the submitter cannot understand cannot be acted on."
+    },
+    "assuranceLevel": {
+      "enum": ["aal1", "aal2", "aal3"],
+      "description": "Recorded as evidence that the step-up demanded by the permission actually happened. parcel.approve_boundary requires aal3, so the President needs phishing-resistant authentication before boundary approval can work at all."
+    },
+    "decidedAt": { "type": "string", "format": "date-time" }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/finance/payee-account.draft.schema.json",
+  "title": "PayeeAccount (DRAFT)",
+  "description": "A party who may receive money, once the provider has verified them (FIN-008). DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "payeeAccountId",
+    "homeInstanceId",
+    "partyId",
+    "provider",
+    "providerAccountRef",
+    "verificationStatus",
+    "payoutCurrency"
+  ],
+  "properties": {
+    "payeeAccountId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "partyId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "OPEN QUESTION 6: the landowning company and the caretaker are different parties with different economic interests. Both can be payees; which one is intended must be explicit."
+    },
+    "provider": { "type": "string", "examples": ["stripe"] },
+    "providerAccountRef": {
+      "type": "string",
+      "description": "The provider's identifier for the onboarded business."
+    },
+    "verificationStatus": {
+      "enum": ["pending", "verified", "rejected", "suspended"],
+      "description": "Set from the provider's KYB outcome. Only 'verified' may be paid."
+    },
+    "verifiedAt": { "type": ["string", "null"], "format": "date-time" },
+    "payoutCurrency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "Often differs from the sponsorship currency, requiring an explicit fx_conversion (FIN-005). Open question 8: who bears the movement between commitment and payout."
+    }
+  },
+  "_notDefinedDeliberately": {
+    "bankAccountNumber": "Never stored here. Bank details live with the provider. Substituting a payee's bank details is the classic payment fraud, and the safest place for them is somewhere this platform cannot alter.",
+    "taxIdentifier": "Held by the provider as part of KYB."
+  }
+}

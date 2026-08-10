@@ -1,0 +1,6 @@
+requirement_id,adr_ids,api,database,event,test
+GOV-001,ADR-005;ADR-014,POST /staff-roles;POST /staff-roles/{id}/revocation,governance.staff_roles,StaffRoleAssigned,TEST-GOV-001
+GOV-002,ADR-014,POST /approval-requests,governance.approval_policies,ApprovalRequested,TEST-GOV-002
+GOV-003,ADR-014,POST /approval-requests/{id}/decisions,governance.approval_decisions,,TEST-GOV-003
+GOV-004,ADR-005;ADR-006,POST /approval-requests,governance.approval_requests.resource_version_id,ApprovalGranted,TEST-GOV-004
+GOV-005,ADR-005;ADR-006,GET /approval-requests,governance.approval_decisions,ApprovalGranted,TEST-GOV-005

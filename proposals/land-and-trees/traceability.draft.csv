@@ -1,0 +1,8 @@
+requirement_id,adr_ids,api,database,event,test
+EVID-003,ADR-011;ADR-029,POST /evidence/assets;POST /evidence/assets/{id}/complete,evidence.assets,EvidenceAssetStored,TEST-EVID-003
+EVID-004,ADR-011,POST /evidence/assets/{id}/complete,evidence.assets.superseded_by_asset_id,,TEST-EVID-004
+GEO-002,ADR-005;ADR-008,POST /parcels,forests.parcels,ParcelCreated,TEST-GEO-002
+GEO-003,ADR-008,POST /parcels/{parcelId}/boundaries,forests.parcel_boundaries.geom,ParcelBoundarySubmitted,TEST-GEO-003
+TREE-002,ADR-005;ADR-019,POST /parcels/{parcelId}/trees,forests.trees,TreeRegistered,TEST-TREE-002
+TREE-003,ADR-014;ADR-016,GET /trees/{treeId},forests.trees.location_precision_policy,,TEST-TREE-003
+TREE-004,ADR-029,POST /trees/{treeId}/observations,forests.tree_observations,TreeObserved,TEST-TREE-004

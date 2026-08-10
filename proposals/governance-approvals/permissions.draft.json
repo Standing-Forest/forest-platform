@@ -1,0 +1,48 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into permissions.json only after review.",
+  "version": "0.1.0-draft",
+  "_note": "parcel.approve_boundary, finance.payout.approve and ai.agent.publish are ALREADY APPROVED with approvalPolicy set. They are not restated or weakened here. These permissions govern the approval machinery itself.",
+  "permissions": [
+    {
+      "code": "approval.request",
+      "resourceType": "approval_request",
+      "action": "create",
+      "riskLevel": "low",
+      "requirementIds": ["GOV-002", "GOV-004"],
+      "_note": "Raising a request is not privileged; deciding on it is."
+    },
+    {
+      "code": "approval.decide",
+      "resourceType": "approval_decision",
+      "action": "create",
+      "riskLevel": "critical",
+      "stepUpAuthentication": "aal3",
+      "requirementIds": ["GOV-001", "GOV-003", "GOV-005"],
+      "_note": "Deliberately carries NO approvalPolicy. Requiring approval to grant an approval is an infinite regress. Control comes from separation of duties (GOV-003) and role eligibility instead. aal3 matches the step-up already required by parcel.approve_boundary."
+    },
+    {
+      "code": "approval.read",
+      "resourceType": "approval_request",
+      "action": "read",
+      "riskLevel": "low",
+      "requirementIds": ["GOV-005"]
+    },
+    {
+      "code": "staff_role.assign",
+      "resourceType": "staff_role",
+      "action": "create",
+      "riskLevel": "critical",
+      "stepUpAuthentication": "aal3",
+      "requirementIds": ["GOV-001"],
+      "_note": "Grants approving authority, so it is at least as sensitive as approving. OPEN QUESTION 4: the first assignment cannot itself be controlled — it needs a documented, audited installation procedure."
+    },
+    {
+      "code": "staff_role.revoke",
+      "resourceType": "staff_role",
+      "action": "update",
+      "riskLevel": "high",
+      "requirementIds": ["GOV-001"],
+      "_note": "Deliberately NOT gated behind approval: removing authority from someone who has left or is compromised must never wait on a committee."
+    }
+  ]
+}

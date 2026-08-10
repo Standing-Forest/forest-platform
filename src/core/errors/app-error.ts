@@ -1,7 +1,7 @@
 /**
  * Errors are declared in the spec package (errors/errors.json), not here.
  * AppError only carries a code; the HTTP status and retryability are looked up
- * from the registry so the wire behaviour can never drift from the contract.
+ * from the registry so the wire behavior can never drift from the contract.
  */
 import { errorDefinitions, type ErrorDefinition } from "../spec/registry.js";
 

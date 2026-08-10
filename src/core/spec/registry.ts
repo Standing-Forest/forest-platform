@@ -3,7 +3,7 @@
  *
  * The spec package is the single source of truth. Nothing in this codebase
  * hardcodes an HTTP status, a permission code, or a requirement id — it all
- * comes from here. If the package changes, behaviour changes with it.
+ * comes from here. If the package changes, behavior changes with it.
  *
  * See docs/forest_platform_machine_readable_release0/forest_platform_release0/
  */

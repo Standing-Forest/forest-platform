@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/events/ledger-transaction-posted.draft.schema.json",
+  "title": "LedgerTransactionPosted payload (DRAFT)",
+  "description": "Named in the approved traceability.csv against FIN-001 but never defined. Emitted once a balanced transaction commits. Carried inside the approved envelope. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["transactionId", "homeInstanceId", "transactionType", "entries", "occurredAt"],
+  "properties": {
+    "transactionId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "transactionType": {
+      "enum": ["sponsorship_payment","payout","refund","chargeback","fee","adjustment","fx_conversion"]
+    },
+    "reversesTransactionId": { "type": ["string", "null"], "format": "uuid" },
+    "entries": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["accountId", "amountMinorUnits", "currency"],
+        "properties": {
+          "accountId": { "type": "string", "format": "uuid" },
+          "amountMinorUnits": { "type": "integer" },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+        }
+      }
+    },
+    "occurredAt": { "type": "string", "format": "date-time" }
+  },
+  "_note": "Carries no sponsor name or email. A finance event stream is retained and forwarded widely; identifying a donor by name in every consumer's log is not defensible."
+}

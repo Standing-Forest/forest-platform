@@ -38,6 +38,21 @@ registerContractGap({
 });
 
 registerContractGap({
+  operation: "SEC-006 cross-tenant access enforcement",
+  missingArtifacts: [
+    "an OpenAPI operation that reads or mutates an existing tenant-owned resource",
+  ],
+  blockedRequirementIds: ["SEC-006"],
+  notes:
+    "Writes are isolated by construction — home_instance_id comes from the authenticated " +
+    "principal and the request schema is closed, so a caller cannot place a resource in " +
+    "another tenant. But all three declared operations either create or are stubs, so no " +
+    "route can pass resourceInstanceId and the cross-tenant check below is never reached " +
+    "from HTTP. It is unit-tested directly. The first read/update operation added must wire " +
+    "it in; see tests/integration.tenancy.test.ts.",
+});
+
+registerContractGap({
   operation: "dual-control approval",
   missingArtifacts: [
     "schema and table for approval records",

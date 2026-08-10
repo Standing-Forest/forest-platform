@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/governance/staff-role.draft.schema.json",
+  "title": "StaffRole (DRAFT)",
+  "description": "An office held by a party for a period. Approving authority belongs to the office, not permanently to the person. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["staffRoleId", "homeInstanceId", "partyId", "role", "assignedBy", "validFrom"],
+  "properties": {
+    "staffRoleId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "partyId": { "type": "string", "format": "uuid" },
+    "role": {
+      "enum": ["forest_committee_chair", "president", "field_worker", "administrator"],
+      "description": "Only president is eligible to approve under dual_control today. forest_committee_chair submits. Both approving offices are held by exactly one person at a time so that 'the President' is unambiguous in an approval record."
+    },
+    "assignedBy": { "type": "string", "format": "uuid" },
+    "validFrom": { "type": "string", "format": "date-time" },
+    "validTo": { "type": ["string", "null"], "format": "date-time" },
+    "revokedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Revocation is immediate and never waits on approval — removing authority from someone compromised must not require a committee."
+    },
+    "revocationReason": { "type": ["string", "null"] }
+  }
+}

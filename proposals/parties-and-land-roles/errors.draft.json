@@ -1,0 +1,46 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into errors.json only after review.",
+  "version": "0.1.0-draft",
+  "errors": [
+    {
+      "code": "PARTY_ALREADY_REGISTERED",
+      "httpStatus": 409,
+      "domain": "field-operations",
+      "retryable": false,
+      "requirementIds": ["PARTY-001"],
+      "_note": "Same natural identity already enrolled in this tenant. See open question 8: offline capture cannot detect this at the point of capture."
+    },
+    {
+      "code": "CONSENT_GRANT_REQUIRED",
+      "httpStatus": 422,
+      "domain": "consent",
+      "retryable": false,
+      "requirementIds": ["CONSENT-002"],
+      "_note": "Enrollment attempted without a consent grant."
+    },
+    {
+      "code": "CONSENT_SCOPE_NOT_PERMITTED",
+      "httpStatus": 403,
+      "domain": "consent",
+      "retryable": false,
+      "requirementIds": ["CONSENT-002", "CONSENT-003"],
+      "_note": "The processing attempted is outside the permitted uses the party agreed to, or the grant has been withdrawn."
+    },
+    {
+      "code": "LAND_AUTHORITY_NOT_ESTABLISHED",
+      "httpStatus": 422,
+      "domain": "field-operations",
+      "retryable": false,
+      "requirementIds": ["LAND-002"],
+      "_note": "No party holds an authority-bearing role (landowner or land_controller) over this parcel, so conservation cannot be committed."
+    },
+    {
+      "code": "LAND_ROLE_CONFLICT",
+      "httpStatus": 409,
+      "domain": "field-operations",
+      "retryable": false,
+      "requirementIds": ["LAND-001"],
+      "_note": "Another party already asserts an exclusive role over this parcel for an overlapping period. See open question 9 — nothing yet says who adjudicates a tenure dispute."
+    }
+  ]
+}

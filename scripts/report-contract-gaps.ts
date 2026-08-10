@@ -15,6 +15,7 @@ import { resolve } from "node:path";
 // Importing for the registerContractGap side effects.
 import "../src/core/auth/authorize.js";
 import "../src/core/auth/principal.js";
+import "../src/core/errors/database.js";
 import "../src/core/errors/unregistered.js";
 import "../src/core/events/outbox.js";
 import "../src/modules/ai/query.routes.js";

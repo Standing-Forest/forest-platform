@@ -1,14 +1,38 @@
 # Forest Platform
 
-An implementation of the Release 0 machine-readable specification package in
-`docs/forest_platform_machine_readable_release0/`.
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+A rainforest conservation platform built from a machine-readable specification —
+for tracking land, trees and the people who tend them, and for connecting
+sponsors to verified conservation work.
+
+> **Pre-release. Not deployable to the public internet.** There is no
+> authentication yet, and most operations deliberately refuse to run. Read
+> [What works, and what refuses](#what-works-and-what-refuses) before assuming
+> anything is functional.
+
+## The idea worth stealing
 
 The governing rule is **DEV-AI-001 — coding agents may not invent missing
-contracts.** Release 0 is explicitly a foundation package, not the complete
-production contract set, so this service implements what the specification fully
-defines and *refuses* everything else with `SPECIFICATION_CONTRACT_MISSING`
-(409), naming the exact artifacts that are absent. See
-[CONTRACT-GAPS.md](./CONTRACT-GAPS.md).
+contracts**, and it applies to human contributors too.
+
+The specification package under `docs/` is the source of truth *at runtime*:
+error statuses come from `errors.json`, authorization from `permissions.json`,
+and every event is validated against the approved envelope before it can be
+stored. Nothing in `src/` hardcodes an HTTP status, a permission code, or a
+requirement id.
+
+When an operation's contract does not exist, the platform **refuses** with
+`SPECIFICATION_CONTRACT_MISSING` (409) and names precisely which artifacts are
+missing — rather than guessing a plausible shape that would later conflict with
+the real one and strand data collected under the wrong schema.
+
+The result is [CONTRACT-GAPS.md](./CONTRACT-GAPS.md): a generated, always-current
+list of exactly what this software cannot honestly do, and what must be written
+and approved before it can. It is also served live at
+`/internal/contract-gaps`. For a system that will make claims about land tenure
+and move money to smallholder farmers, being loudly incapable beats being
+quietly wrong.
 
 ## Quick start
 
@@ -23,7 +47,7 @@ the approved SQL then exits), and `api`.
 
 ## What works, and what refuses
 
-| Operation | Behaviour |
+| Operation | Behavior |
 | --- | --- |
 | `POST /api/v1/projects` | **Implemented.** Creates the project and its `ForestProjectCreated` event in one transaction. |
 | `POST /api/v1/parcels/:parcelId/boundaries` | Authorization and the `x-idempotency-required` contract are enforced, then **409** — no `forests.parcel_boundaries` table or geometry schema exists. |
@@ -119,5 +143,44 @@ src/core/events/     envelope validation, transactional outbox, publisher
 src/core/auth/       principal resolution, permission enforcement
 src/modules/         forests, ai
 scripts/             migrate, seed-dev, report-contract-gaps
+web/                 the browser UI (branding.json rebrands the whole site)
 docs/                the specification package (read at runtime)
+proposals/           DRAFT contracts awaiting human approval — not implemented
 ```
+
+## The web UI
+
+`docker compose up -d --build`, then http://localhost:3000. Four surfaces:
+supporters, staff console, field, and platform status.
+
+Every section is badged **Live** (talks to the real backend), **Demo** (sample
+data from `web/demo-data.js`), or **No contract** (the operation genuinely does
+not exist). The donation form does not take money and says so.
+
+Rebranding is one file — `web/branding.json` holds the organization name,
+tagline, mission, logo, colour palette and contact details. Edit, save, refresh.
+No rebuild, no code.
+
+## Proposals
+
+`proposals/` holds draft contracts for capabilities the specification does not
+yet cover: parties and land roles, evidence and trees, governance and approvals,
+and finance. **None is approved or implemented** — the platform still refuses
+every operation they describe.
+
+Each proposal ends with an **Open questions** section naming decisions that
+cannot legitimately be made by an engineer: consent withdrawal versus permanent
+history, what precisely is promised to a sponsor, whether a land controller is
+one role or several. Those questions are the most valuable part.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). The short version: implementations must
+not invent contracts, and anything requiring a contract that does not exist is a
+*proposal*, not a pull request against `docs/`.
+
+Security issues: see [SECURITY.md](SECURITY.md) — please report privately.
+
+## Licence
+
+[Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for authorship disclosure.

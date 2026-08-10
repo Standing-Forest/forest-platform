@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/events/payout-executed.draft.schema.json",
+  "title": "PayoutExecuted payload (DRAFT)",
+  "description": "Money has been instructed to move to a verified payee. Carried inside the approved envelope. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "payoutBatchId",
+    "homeInstanceId",
+    "payeeAccountId",
+    "totalMinorUnits",
+    "currency",
+    "approvalRequestId",
+    "executedBy",
+    "executedAt"
+  ],
+  "properties": {
+    "payoutBatchId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "payeeAccountId": { "type": "string", "format": "uuid" },
+    "totalMinorUnits": { "type": "integer", "exclusiveMinimum": 0 },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "approvalRequestId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Required in the event as well as the record: an auditor reading the event stream alone can confirm no money moved without dual-control approval."
+    },
+    "lineCount": { "type": "integer", "minimum": 1 },
+    "executedBy": { "type": "string", "format": "uuid" },
+    "executedAt": { "type": "string", "format": "date-time" },
+    "ledgerTransactionId": { "type": ["string", "null"], "format": "uuid" }
+  },
+  "_note": "Carries no bank details or provider account reference beyond the internal payee id."
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/events/tree-observed.draft.schema.json",
+  "title": "TreeObserved payload (DRAFT)",
+  "description": "The caretaker's recurring action: a tree was seen, in this condition, with this evidence. This event is what allows a sponsor-facing view to be updated without granting it access to the underlying records. Carried inside the approved envelope. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observationId",
+    "homeInstanceId",
+    "treeId",
+    "observedBy",
+    "observedAt",
+    "condition",
+    "evidenceAssetIds"
+  ],
+  "properties": {
+    "observationId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "treeId": { "type": "string", "format": "uuid" },
+    "observedBy": { "type": "string", "format": "uuid" },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "condition": {
+      "enum": ["healthy", "stressed", "diseased", "damaged", "fallen", "removed"]
+    },
+    "evidenceAssetIds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "format": "uuid" },
+      "description": "Non-empty by contract (TREE-004). A consumer receiving this event can always resolve the evidence behind the claim."
+    }
+  },
+  "_note": "The caretaker's free-text note is excluded. It is unmoderated human writing that may name people; publishing it requires the story and moderation contract."
+}

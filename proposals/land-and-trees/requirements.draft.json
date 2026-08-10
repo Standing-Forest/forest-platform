@@ -1,0 +1,70 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into requirements.json only after review.",
+  "version": "0.1.0-draft",
+  "_note": "GEO-001, TREE-001, EVID-001 and EVID-002 are ALREADY APPROVED in the package. They are not restated here. These entries add what those requirements need in order to be satisfiable.",
+  "requirements": [
+    {
+      "id": "EVID-003",
+      "title": "Evidence assets are content-addressed and verified on completion",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "evidence",
+      "rationale": "EVID-002 requires immutable cryptographically hashed originals but defines no upload operation. Two-phase upload with server-side digest verification is what makes the existing EVIDENCE_CHECKSUM_MISMATCH error reachable. Bytes go straight to object storage and never through the API process.",
+      "relatedAdrs": ["ADR-011", "ADR-029"]
+    },
+    {
+      "id": "EVID-004",
+      "title": "Evidence is superseded, never deleted",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "evidence",
+      "rationale": "An evidence record that can be edited or removed is not evidence. Corrections supersede. OPEN QUESTION: photographs may contain identifiable people and data protection law may compel deletion — see open question 5.",
+      "relatedAdrs": ["ADR-011"]
+    },
+    {
+      "id": "GEO-002",
+      "title": "Parcels exist as first-class records with an approval lifecycle",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "forests",
+      "rationale": "GEO-001 approves append-only parcel boundaries and traceability.csv names forests.parcel_boundaries, but no parcel table was ever created. Submission and approval are distinct operations because parcel.approve_boundary is already approved as critical with aal3 and dual control.",
+      "relatedAdrs": ["ADR-008", "ADR-005"]
+    },
+    {
+      "id": "GEO-003",
+      "title": "Boundary geometry is stored as WGS84 geography",
+      "priority": "high",
+      "status": "proposed",
+      "owner": "forests",
+      "rationale": "GEOGRAPHY(POLYGON, 4326) gives correct area and distance over large tropical extents without committing to a local projection. Areas are computed by the database, never supplied by the client, so a claimed hectare figure cannot disagree with the geometry it came from.",
+      "relatedAdrs": ["ADR-008"]
+    },
+    {
+      "id": "TREE-002",
+      "title": "A tree is a durable identity; its condition is an observation series",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "forests",
+      "rationale": "TREE-001 requires permanent tree history. Identity that rarely changes is separated from measurements and photographs that change often, so a tree's history is a first-class query rather than something reconstructed from an audit log.",
+      "relatedAdrs": ["ADR-005", "ADR-019"]
+    },
+    {
+      "id": "TREE-003",
+      "title": "Public tree locations may be reduced in precision",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "security",
+      "rationale": "Publishing exact coordinates of high-value timber endangers the trees and the people who tend them. Precision reduction is a property of the record, applied on read, not a rendering choice left to each client.",
+      "relatedAdrs": ["ADR-014", "ADR-016"]
+    },
+    {
+      "id": "TREE-004",
+      "title": "Every observation cites the evidence it rests on",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "evidence",
+      "rationale": "EVID-001 requires material claims to trace to evidence. Any claim shown to a sponsor about a tree's condition must reference the evidence asset supporting it, or it must not be shown.",
+      "relatedAdrs": ["ADR-029"]
+    }
+  ]
+}

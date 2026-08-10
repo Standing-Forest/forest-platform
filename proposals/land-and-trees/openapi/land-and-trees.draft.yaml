@@ -1,0 +1,193 @@
+# DRAFT — proposed, not approved. Merge into openapi/root.yaml after review.
+#
+# submitParcelBoundary already exists in the approved root.yaml with no request
+# or response schema. This proposal supplies them; it does not redefine the
+# operation id.
+
+openapi: 3.1.0
+info:
+  title: Forest Platform API — evidence, parcels and trees (DRAFT)
+  version: 0.1.0-draft
+servers:
+  - url: /api/v1
+
+paths:
+  /evidence/assets:
+    post:
+      operationId: createEvidenceUpload
+      summary: Reserve an evidence asset and get a short-lived upload URL
+      description: >
+        Phase one of two. The client declares the digest and size it intends to
+        upload and receives a signed URL. Bytes go directly to object storage
+        and never pass through this API.
+      x-domain-owner: evidence
+      x-requirement-ids: [EVID-002, EVID-003]
+      x-risk-level: medium
+      x-audit-required: true
+      x-idempotency-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [checksumSha256, mediaType, byteSize, dataClassification]
+              properties:
+                checksumSha256: { type: string, pattern: "^[a-f0-9]{64}$" }
+                mediaType: { type: string }
+                byteSize: { type: integer, minimum: 1 }
+                dataClassification:
+                  enum: [public, internal, confidential, restricted, cultural_restricted]
+                capturedAt: { type: string, format: date-time }
+      responses:
+        "201":
+          description: Upload reserved; signed URL returned
+        "200":
+          description: Identical bytes already stored; the existing asset is returned
+
+  /evidence/assets/{evidenceAssetId}/complete:
+    post:
+      operationId: completeEvidenceUpload
+      summary: Verify the stored object's digest and make the asset usable
+      description: >
+        Phase two. The server reads the digest of what actually landed in
+        storage and compares it to what was declared. This is the operation
+        that makes the already-approved EVIDENCE_CHECKSUM_MISMATCH reachable.
+      x-domain-owner: evidence
+      x-requirement-ids: [EVID-002, EVID-003]
+      x-risk-level: high
+      x-audit-required: true
+      parameters:
+        - name: evidenceAssetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Verified; the asset may now be cited }
+        "422": { description: EVIDENCE_CHECKSUM_MISMATCH }
+
+  /parcels:
+    post:
+      operationId: createParcel
+      summary: Create a parcel within a project
+      x-domain-owner: forests
+      x-requirement-ids: [GEO-002]
+      x-risk-level: medium
+      x-audit-required: true
+      responses:
+        "201": { description: Created }
+
+  /parcels/{parcelId}/boundaries/{boundaryId}/approval:
+    post:
+      operationId: approveParcelBoundary
+      summary: Approve a submitted boundary
+      description: >
+        parcel.approve_boundary is already approved as critical, aal3, dual
+        control. This operation therefore cannot succeed until the approval
+        record contract exists — the platform refuses any permission carrying
+        an approvalPolicy.
+      x-domain-owner: forests
+      x-requirement-ids: [GEO-001, GEO-002, SEC-006]
+      x-risk-level: critical
+      x-audit-required: true
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: boundaryId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Approved }
+        "409": { description: SPECIFICATION_CONTRACT_MISSING until approval records exist }
+
+  /parcels/{parcelId}/trees:
+    post:
+      operationId: registerTree
+      summary: Register a tree on a parcel
+      x-domain-owner: forests
+      x-requirement-ids: [TREE-001, TREE-002, EVID-001]
+      x-risk-level: medium
+      x-audit-required: true
+      x-idempotency-required: true
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/tree.draft.schema.json"
+      responses:
+        "201": { description: Registered }
+        "422": { description: TREE_OUTSIDE_PARCEL }
+
+  /trees/{treeId}:
+    get:
+      operationId: readTree
+      summary: Read a tree
+      description: >
+        Location precision follows the tree's policy unless the caller holds
+        tree.read_precise_location. Sponsors and the public receive a reduced
+        position (TREE-003).
+      x-domain-owner: forests
+      x-requirement-ids: [TREE-002, TREE-003, SEC-006]
+      x-risk-level: low
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: precision
+          in: query
+          required: false
+          schema: { enum: [policy, exact] }
+      responses:
+        "200": { description: The tree }
+        "403": { description: LOCATION_PRECISION_NOT_PERMITTED }
+
+  /trees/{treeId}/observations:
+    get:
+      operationId: listTreeObservations
+      summary: The history of a tree
+      description: >
+        The chronological observation series with its evidence — what a sponsor
+        is shown, and the reason TREE-002 separates identity from condition.
+      x-domain-owner: forests
+      x-requirement-ids: [TREE-001, TREE-002, TREE-004]
+      x-risk-level: low
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Observations, newest first }
+    post:
+      operationId: observeTree
+      summary: Record a tree's condition with evidence
+      x-domain-owner: forests
+      x-requirement-ids: [TREE-002, TREE-004, EVID-001]
+      x-risk-level: medium
+      x-audit-required: true
+      x-idempotency-required: true
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/tree-observation.draft.schema.json"
+      responses:
+        "201": { description: Recorded }
+        "422": { description: OBSERVATION_EVIDENCE_REQUIRED }

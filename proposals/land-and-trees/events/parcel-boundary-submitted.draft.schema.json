@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/events/parcel-boundary-submitted.draft.schema.json",
+  "title": "ParcelBoundarySubmitted payload (DRAFT)",
+  "description": "Named in the approved traceability.csv against GEO-001 but never defined. Carried inside the approved envelope. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["boundaryId", "homeInstanceId", "parcelId", "version", "surveyMethod", "submittedBy"],
+  "properties": {
+    "boundaryId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "parcelId": { "type": "string", "format": "uuid" },
+    "version": { "type": "integer", "minimum": 1 },
+    "surveyMethod": {
+      "enum": ["gps_walk", "satellite_trace", "cadastral_record", "participatory_mapping"]
+    },
+    "areaHectares": { "type": ["number", "null"], "minimum": 0 },
+    "accuracyMetres": { "type": ["number", "null"], "minimum": 0 },
+    "submittedBy": { "type": "string", "format": "uuid" },
+    "evidenceAssetIds": {
+      "type": "array",
+      "items": { "type": "string", "format": "uuid" }
+    }
+  },
+  "_note": "Deliberately carries the computed area rather than the geometry. Polygon coordinates in an event stream are both large and sensitive; consumers needing the shape should read the boundary under permission."
+}

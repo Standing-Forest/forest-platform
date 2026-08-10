@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/finance/payout-batch.draft.schema.json",
+  "title": "PayoutBatch (DRAFT)",
+  "description": "Money out to a verified payee (FIN-007). Proposed by the Forest Committee Chair, approved by the President under dual_control, executed by the provider. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "payoutBatchId",
+    "homeInstanceId",
+    "payeeAccountId",
+    "total",
+    "lines",
+    "status",
+    "proposedBy",
+    "proposedAt"
+  ],
+  "properties": {
+    "payoutBatchId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "payeeAccountId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "FIN-008: must reference a payee whose provider KYB verification succeeded."
+    },
+    "total": { "$ref": "https://forest.example/schemas/core/money.schema.json" },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Frozen once the batch leaves 'proposed', enforced by a database trigger. Adding a line after approval is the approve-then-swap attack applied to money.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["amount", "description"],
+        "properties": {
+          "sponsorshipId": { "type": ["string", "null"], "format": "uuid" },
+          "amount": { "$ref": "https://forest.example/schemas/core/money.schema.json" },
+          "description": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "approvalRequestId": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "FIN-007: required before the batch may leave 'proposed'. The approval binds to this batch id specifically."
+    },
+    "approvedContentDigest": {
+      "type": ["string", "null"],
+      "description": "Fingerprint of the lines at approval time. Execution recomputes it and refuses on mismatch."
+    },
+    "status": {
+      "enum": ["proposed", "approved", "executing", "paid", "failed", "cancelled"]
+    },
+    "proposedBy": { "type": "string", "format": "uuid" },
+    "executedBy": { "type": ["string", "null"], "format": "uuid" },
+    "providerPayoutRef": { "type": ["string", "null"] },
+    "ledgerTransactionId": { "type": ["string", "null"], "format": "uuid" },
+    "proposedAt": { "type": "string", "format": "date-time" },
+    "executedAt": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "_note": "Funds move provider-to-payee. The platform authorizes and records but never takes custody, which is the difference between recordkeeping and money transmission. See the compliance note in the proposal README."
+}

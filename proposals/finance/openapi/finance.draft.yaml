@@ -1,0 +1,153 @@
+# DRAFT — proposed, not approved. Merge into openapi/root.yaml after review.
+
+openapi: 3.1.0
+info:
+  title: Forest Platform API — finance (DRAFT)
+  version: 0.1.0-draft
+servers:
+  - url: /api/v1
+
+paths:
+  /sponsorships:
+    post:
+      operationId: createSponsorship
+      summary: Begin sponsoring a tree
+      description: >
+        Creates a pending_payment sponsorship and returns a hosted checkout URL.
+        Card details go from the sponsor's browser to the provider and never
+        reach this platform (FIN-006). The sponsorship activates only when the
+        provider's webhook confirms payment.
+      x-domain-owner: finance
+      x-requirement-ids: [SPON-001, SPON-002, FIN-006]
+      x-risk-level: medium
+      x-audit-required: true
+      x-idempotency-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/sponsorship.draft.schema.json"
+      responses:
+        "201": { description: Created with a checkout URL }
+        "422": { description: SPONSORSHIP_TREE_NOT_SPONSORABLE }
+        "409": { description: SPONSORSHIP_ALREADY_ACTIVE }
+
+  /sponsorships/{sponsorshipId}:
+    get:
+      operationId: readSponsorship
+      summary: Read a sponsorship and its reporting history
+      description: >
+        What the sponsor sees: the tree, its observations during the term, and
+        the evidence behind them. SPON-001 makes the reporting obligation
+        checkable rather than assumed.
+      x-domain-owner: finance
+      x-requirement-ids: [SPON-001, EVID-001]
+      x-risk-level: medium
+      parameters:
+        - name: sponsorshipId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: The sponsorship with its observation history }
+
+  /webhooks/payments/{provider}:
+    post:
+      operationId: receivePaymentWebhook
+      summary: Receive a payment notification from the provider
+      description: >
+        The signature MUST be verified against the provider's secret before the
+        body is trusted. An unverified webhook is a direct route to free
+        sponsorships. Handling is idempotent on the provider payment reference,
+        because providers retry.
+      x-domain-owner: finance
+      x-requirement-ids: [FIN-006, SPON-003]
+      x-risk-level: critical
+      x-audit-required: true
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Processed (or already processed) }
+        "422": { description: PAYMENT_PROVIDER_UNVERIFIED }
+
+  /internal/ledger-transactions:
+    post:
+      operationId: postLedgerTransaction
+      summary: Post a balanced transaction to the ledger
+      description: >
+        Named in the approved traceability.csv against FIN-001. Entries must sum
+        to zero per currency; the database refuses anything else.
+      x-domain-owner: finance
+      x-requirement-ids: [FIN-001, FIN-002, FIN-003]
+      x-risk-level: critical
+      x-audit-required: true
+      x-idempotency-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/ledger-transaction.draft.schema.json"
+      responses:
+        "201": { description: Posted }
+        "422": { description: LEDGER_TRANSACTION_UNBALANCED }
+
+  /payee-accounts:
+    post:
+      operationId: onboardPayee
+      summary: Register a payee and start provider verification
+      x-domain-owner: finance
+      x-requirement-ids: [FIN-008]
+      x-risk-level: critical
+      x-audit-required: true
+      responses:
+        "201": { description: Onboarding started; verification pending }
+
+  /payout-batches:
+    post:
+      operationId: proposePayoutBatch
+      summary: Propose a payout to a verified payee
+      description: >
+        The Forest Committee Chair's step. Proposing does not move money and
+        does not require approval; executing does.
+      x-domain-owner: finance
+      x-requirement-ids: [FIN-007, FIN-008]
+      x-risk-level: high
+      x-audit-required: true
+      x-idempotency-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/payout-batch.draft.schema.json"
+      responses:
+        "201": { description: Proposed }
+        "422": { description: PAYEE_NOT_VERIFIED or PAYOUT_INSUFFICIENT_FUNDS }
+
+  /payout-batches/{payoutBatchId}/execution:
+    post:
+      operationId: executePayoutBatch
+      summary: Instruct the provider to pay an approved batch
+      description: >
+        Requires a granted dual-control approval bound to this batch — the
+        President's decision under the governance proposal. The content digest
+        is recomputed and execution refused if the lines changed after approval.
+      x-domain-owner: finance
+      x-requirement-ids: [FIN-007, FIN-008]
+      x-risk-level: critical
+      x-audit-required: true
+      x-idempotency-required: true
+      parameters:
+        - name: payoutBatchId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "202": { description: Instructed to the provider }
+        "409":
+          description: PAYOUT_APPROVAL_REQUIRED or PAYOUT_BATCH_MODIFIED_AFTER_APPROVAL

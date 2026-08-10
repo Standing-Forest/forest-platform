@@ -1,0 +1,81 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into permissions.json only after review.",
+  "version": "0.1.0-draft",
+  "_note": "finance.payout.approve is ALREADY APPROVED as critical / aal3 / dual_control. It is not restated or weakened here. Under the governance proposal that means the Forest Committee Chair proposes a payout and the President approves it.",
+  "permissions": [
+    {
+      "code": "sponsorship.create",
+      "resourceType": "sponsorship",
+      "action": "create",
+      "riskLevel": "medium",
+      "requirementIds": ["SPON-001", "SPON-002"],
+      "_note": "Held by the public checkout flow acting as a service principal, not by a staff member. The sponsor is not an authenticated platform user."
+    },
+    {
+      "code": "sponsorship.read",
+      "resourceType": "sponsorship",
+      "action": "read",
+      "riskLevel": "medium",
+      "requirementIds": ["SPON-001"],
+      "_note": "A sponsor may read their own sponsorship. Reading anyone else's requires staff permission and passes the SEC-006 tenant check."
+    },
+    {
+      "code": "payment.record",
+      "resourceType": "payment",
+      "action": "create",
+      "riskLevel": "high",
+      "requirementIds": ["FIN-006"],
+      "_note": "Held by the provider webhook handler. The platform records what the provider reports; it never asserts a payment happened on its own authority."
+    },
+    {
+      "code": "payment.refund",
+      "resourceType": "payment",
+      "action": "update",
+      "riskLevel": "critical",
+      "stepUpAuthentication": "aal3",
+      "requirementIds": ["SPON-003"],
+      "_note": "Moves money back to a sponsor. OPEN QUESTION: should a refund require dual control like a payout? The draft requires step-up but not approval, so a wronged sponsor is not made to wait on a committee."
+    },
+    {
+      "code": "ledger.read",
+      "resourceType": "ledger_transaction",
+      "action": "read",
+      "riskLevel": "medium",
+      "requirementIds": ["FIN-001", "FIN-002"]
+    },
+    {
+      "code": "ledger.post",
+      "resourceType": "ledger_transaction",
+      "action": "create",
+      "riskLevel": "critical",
+      "requirementIds": ["FIN-001", "FIN-002", "FIN-003"],
+      "_note": "Posting to the ledger directly. Should be held by internal services rather than people; a human posting arbitrary entries can hide anything."
+    },
+    {
+      "code": "payout.propose",
+      "resourceType": "payout_batch",
+      "action": "create",
+      "riskLevel": "high",
+      "requirementIds": ["FIN-007"],
+      "_note": "The Forest Committee Chair's role in the payout flow. Proposing does not move money."
+    },
+    {
+      "code": "payout.execute",
+      "resourceType": "payout_batch",
+      "action": "update",
+      "riskLevel": "critical",
+      "stepUpAuthentication": "aal3",
+      "requirementIds": ["FIN-007", "FIN-008"],
+      "_note": "Separate from finance.payout.approve on purpose: approving is a decision, executing is an instruction to the provider. Both are needed, and the database refuses execution without a granted approval bound to this exact batch."
+    },
+    {
+      "code": "payee.onboard",
+      "resourceType": "payee_account",
+      "action": "create",
+      "riskLevel": "critical",
+      "stepUpAuthentication": "aal3",
+      "requirementIds": ["FIN-008"],
+      "_note": "Registers who may receive money. Substituting a payee's bank details is the classic payment fraud, which is why this is as sensitive as paying."
+    }
+  ]
+}

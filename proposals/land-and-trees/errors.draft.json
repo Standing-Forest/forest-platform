@@ -1,0 +1,63 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into errors.json only after review.",
+  "version": "0.1.0-draft",
+  "_note": "EVIDENCE_CHECKSUM_MISMATCH and PARCEL_BOUNDARY_INVALID are ALREADY APPROVED and are not restated. This proposal makes both of them reachable for the first time.",
+  "errors": [
+    {
+      "code": "EVIDENCE_UPLOAD_INCOMPLETE",
+      "httpStatus": 409,
+      "domain": "evidence",
+      "retryable": true,
+      "requirementIds": ["EVID-003"],
+      "_note": "The asset was referenced before its bytes arrived and its digest was verified."
+    },
+    {
+      "code": "EVIDENCE_IMMUTABLE",
+      "httpStatus": 409,
+      "domain": "evidence",
+      "retryable": false,
+      "requirementIds": ["EVID-004"],
+      "_note": "An attempt to modify or delete a stored asset. Supersede it instead."
+    },
+    {
+      "code": "PARCEL_BOUNDARY_NOT_APPROVED",
+      "httpStatus": 422,
+      "domain": "forests",
+      "retryable": false,
+      "requirementIds": ["GEO-002"],
+      "_note": "An operation requiring approved land was attempted on a parcel whose boundary is still pending."
+    },
+    {
+      "code": "PARCEL_BOUNDARY_OVERLAPS",
+      "httpStatus": 409,
+      "domain": "forests",
+      "retryable": false,
+      "requirementIds": ["GEO-002"],
+      "_note": "The submitted geometry overlaps another approved parcel. OPEN QUESTION: overlap may indicate a genuine tenure dispute rather than an error — see the parties proposal, open question 9."
+    },
+    {
+      "code": "TREE_OUTSIDE_PARCEL",
+      "httpStatus": 422,
+      "domain": "forests",
+      "retryable": false,
+      "requirementIds": ["TREE-002"],
+      "_note": "The tree's coordinates fall outside the parcel's approved boundary. Frequently a GPS accuracy problem rather than an error, so the tolerance is configurable."
+    },
+    {
+      "code": "OBSERVATION_EVIDENCE_REQUIRED",
+      "httpStatus": 422,
+      "domain": "evidence",
+      "retryable": false,
+      "requirementIds": ["TREE-004", "EVID-001"],
+      "_note": "An observation making a material claim cited no evidence."
+    },
+    {
+      "code": "LOCATION_PRECISION_NOT_PERMITTED",
+      "httpStatus": 403,
+      "domain": "security",
+      "retryable": false,
+      "requirementIds": ["TREE-003"],
+      "_note": "Exact coordinates requested without tree.read_precise_location."
+    }
+  ]
+}

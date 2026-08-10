@@ -1,7 +1,12 @@
+import { dirname, resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import Fastify, { type FastifyInstance } from "fastify";
+import fastifyStatic from "@fastify/static";
 import { newId } from "./core/ids.js";
 import { AppError } from "./core/errors/app-error.js";
 import { UnregisteredError } from "./core/errors/unregistered.js";
+import { translateDatabaseError } from "./core/errors/database.js";
 import { EnvelopeValidationError } from "./core/events/envelope.js";
 import { listContractGaps } from "./core/spec/contract-gap.js";
 import { adrs, errorDefinitions, permissions, requirements, specVersion } from "./core/spec/registry.js";
@@ -32,6 +37,16 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   const app = Fastify({
     logger: { level: env.logLevel },
     genReqId: () => newId(),
+    ajv: {
+      customOptions: {
+        // Fastify defaults to removeAdditional: true, which silently strips
+        // properties a schema does not declare. For a contract-driven API that
+        // is the wrong failure mode: a caller sending homeInstanceId or any
+        // other unspecified field would get a 201 and believe it took effect.
+        // Reject instead, so `additionalProperties: false` means what it says.
+        removeAdditional: false,
+      },
+    },
   });
 
   app.decorateRequest("principal", null);
@@ -68,6 +83,16 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         specificationRegistered: false,
         correlationId,
       });
+    }
+
+    // A constraint doing its job is a caller error, not a server fault.
+    const databaseError = translateDatabaseError(error);
+    if (databaseError) {
+      request.log.warn(
+        { code: databaseError.unregisteredCode, correlationId },
+        databaseError.message,
+      );
+      return reply.status(databaseError.httpStatus).send(databaseError.toBody(correlationId));
     }
 
     const fastifyError = error as { validation?: unknown; message?: string };
@@ -111,6 +136,17 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     registerParcelRoutes(instance);
     registerAiRoutes(instance);
   }, { prefix: "/api/v1" });
+
+  // The web UI. Not described by any approved contract — it is a product
+  // surface that consumes the API, and it labels every screen it renders from
+  // sample data rather than from the platform.
+  const webRoot =
+    process.env.WEB_ROOT ?? resolve(dirname(fileURLToPath(import.meta.url)), "../../web");
+  if (existsSync(webRoot)) {
+    await app.register(fastifyStatic, { root: webRoot, index: ["index.html"] });
+  } else {
+    app.log.warn({ webRoot }, "web UI directory not found; serving API only");
+  }
 
   return app;
 }

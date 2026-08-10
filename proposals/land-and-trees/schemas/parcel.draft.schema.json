@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/forests/parcel.draft.schema.json",
+  "title": "Parcel (DRAFT)",
+  "description": "A piece of land the platform tracks. Identity is stable; its geometry lives in an append-only series of boundary versions. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["parcelId", "homeInstanceId", "projectId", "localReference", "status", "recordedAt"],
+  "properties": {
+    "parcelId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "projectId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The forest project this parcel belongs to (forests.projects — already exists)."
+    },
+    "localReference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "How people on the ground refer to it. Unique within a project."
+    },
+    "status": {
+      "enum": ["draft", "boundary_submitted", "boundary_approved", "withdrawn"],
+      "description": "Only boundary_approved land may be sponsored. Trees may be registered earlier — see open question 6."
+    },
+    "currentBoundaryId": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "The approved boundary version in force. Null until one is approved."
+    },
+    "areaHectares": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Computed by the database from the approved geometry, never supplied by a client, so a stated area can never contradict the shape it came from."
+    },
+    "recordedAt": { "type": "string", "format": "date-time" }
+  }
+}

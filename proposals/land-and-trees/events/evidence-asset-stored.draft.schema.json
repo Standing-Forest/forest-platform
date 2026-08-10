@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/events/evidence-asset-stored.draft.schema.json",
+  "title": "EvidenceAssetStored payload (DRAFT)",
+  "description": "Emitted once an uploaded asset's digest has been verified against the stored object. Named in the approved traceability.csv against EVID-002, but never defined. Carried inside the approved envelope. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidenceAssetId", "homeInstanceId", "checksumSha256", "mediaType", "byteSize"],
+  "properties": {
+    "evidenceAssetId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "checksumSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "mediaType": { "type": "string" },
+    "byteSize": { "type": "integer", "minimum": 1 },
+    "capturedAt": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "_note": "Carries no storage key and no capture location. Events travel widely and are retained; a signed URL or a precise coordinate in an event stream defeats the access control applied on read."
+}

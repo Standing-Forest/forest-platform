@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/governance/approval-policy.draft.schema.json",
+  "title": "ApprovalPolicy (DRAFT)",
+  "description": "Defines what an approvalPolicy named in permissions.json actually requires. Data rather than code, so a control can be tightened without a release. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policyCode",
+    "description",
+    "minimumApprovals",
+    "requesterMayApprove",
+    "eligibleApproverRoles"
+  ],
+  "properties": {
+    "policyCode": {
+      "type": "string",
+      "description": "Matches approvalPolicy in permissions.json — currently dual_control and ai_release_review."
+    },
+    "description": { "type": "string" },
+    "minimumApprovals": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Approvals required IN ADDITION to the requester's own submission. 1 under dual_control today, giving two distinct people. Raise to 2 once a third authorized person exists."
+    },
+    "requesterMayApprove": {
+      "type": "boolean",
+      "default": false,
+      "description": "False for any genuine dual control. Setting this true collapses four-eyes to one pair of eyes."
+    },
+    "eligibleApproverRoles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["forest_committee_chair", "president", "field_worker", "administrator"]
+      },
+      "description": "An EMPTY array means nobody may approve, so the operation keeps refusing. That is the deliberate state of ai_release_review until somebody says who reviews an AI release."
+    },
+    "defaultExpiryDays": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 30,
+      "description": "A request pending for months is stale consent."
+    }
+  }
+}

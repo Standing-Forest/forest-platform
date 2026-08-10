@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/events/tree-registered.draft.schema.json",
+  "title": "TreeRegistered payload (DRAFT)",
+  "description": "A tree enters permanent history (TREE-001). Carried inside the approved envelope. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["treeId", "homeInstanceId", "parcelId", "vernacularName", "registeredBy"],
+  "properties": {
+    "treeId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "parcelId": { "type": "string", "format": "uuid" },
+    "vernacularName": { "type": "string" },
+    "scientificName": { "type": ["string", "null"] },
+    "caretakerPartyId": { "type": ["string", "null"], "format": "uuid" },
+    "registeredBy": { "type": "string", "format": "uuid" }
+  },
+  "_note": "Carries no coordinates. TREE-003 reduces location precision on read; publishing exact positions of high-value timber into an event stream would bypass that entirely."
+}

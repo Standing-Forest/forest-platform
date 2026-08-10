@@ -1,0 +1,79 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into errors.json only after review.",
+  "version": "0.1.0-draft",
+  "_note": "LEDGER_TRANSACTION_UNBALANCED is ALREADY APPROVED. This proposal makes it reachable for the first time.",
+  "errors": [
+    {
+      "code": "LEDGER_ENTRY_IMMUTABLE",
+      "httpStatus": 409,
+      "domain": "finance",
+      "retryable": false,
+      "requirementIds": ["FIN-003"],
+      "_note": "An attempt to modify or delete a posted entry. Post a reversing transaction instead."
+    },
+    {
+      "code": "LEDGER_CURRENCY_MISMATCH",
+      "httpStatus": 422,
+      "domain": "finance",
+      "retryable": false,
+      "requirementIds": ["FIN-004", "FIN-005"],
+      "_note": "A transaction mixes currencies without an explicit conversion recording rate, source and timestamp."
+    },
+    {
+      "code": "SPONSORSHIP_TREE_NOT_SPONSORABLE",
+      "httpStatus": 422,
+      "domain": "finance",
+      "retryable": false,
+      "requirementIds": ["SPON-002"],
+      "_note": "The tree is on land without an approved boundary, or no party holds authority to commit it. Selling it would be selling something that may not exist."
+    },
+    {
+      "code": "SPONSORSHIP_ALREADY_ACTIVE",
+      "httpStatus": 409,
+      "domain": "finance",
+      "retryable": false,
+      "requirementIds": ["SPON-001"],
+      "_note": "This tree already has an active sponsorship for an overlapping term. OPEN QUESTION: whether a tree may have several sponsors is a policy decision, not a technical one."
+    },
+    {
+      "code": "PAYMENT_PROVIDER_UNVERIFIED",
+      "httpStatus": 422,
+      "domain": "finance",
+      "retryable": true,
+      "requirementIds": ["FIN-006"],
+      "_note": "A webhook could not be verified against the provider's signature. Never trust an unverified payment notification: it is a direct route to free sponsorships."
+    },
+    {
+      "code": "PAYOUT_APPROVAL_REQUIRED",
+      "httpStatus": 409,
+      "domain": "finance",
+      "retryable": true,
+      "requirementIds": ["FIN-007"],
+      "_note": "Execution attempted without a granted approval bound to this batch. Retryable once the President approves."
+    },
+    {
+      "code": "PAYOUT_BATCH_MODIFIED_AFTER_APPROVAL",
+      "httpStatus": 409,
+      "domain": "finance",
+      "retryable": false,
+      "requirementIds": ["FIN-007"],
+      "_note": "The batch changed after it was approved — the approve-then-swap attack applied to money."
+    },
+    {
+      "code": "PAYEE_NOT_VERIFIED",
+      "httpStatus": 422,
+      "domain": "finance",
+      "retryable": true,
+      "requirementIds": ["FIN-008"],
+      "_note": "The payee has not completed provider KYB onboarding."
+    },
+    {
+      "code": "PAYOUT_INSUFFICIENT_FUNDS",
+      "httpStatus": 422,
+      "domain": "finance",
+      "retryable": true,
+      "requirementIds": ["FIN-002"],
+      "_note": "The source account's ledger balance does not cover the batch."
+    }
+  ]
+}

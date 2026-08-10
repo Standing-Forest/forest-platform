@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/events/approval-granted.draft.schema.json",
+  "title": "ApprovalGranted payload (DRAFT)",
+  "description": "Emitted when a request reaches its required approvals. This is the event that unblocks the underlying operation — boundary approval, payout release. Carried inside the approved envelope. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvalRequestId",
+    "homeInstanceId",
+    "permissionCode",
+    "policyCode",
+    "resourceType",
+    "resourceVersionId",
+    "requestedBy",
+    "decisions"
+  ],
+  "properties": {
+    "approvalRequestId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "permissionCode": { "type": "string" },
+    "policyCode": { "type": "string" },
+    "resourceType": { "type": "string" },
+    "resourceVersionId": { "type": "string", "format": "uuid" },
+    "requestedBy": { "type": "string", "format": "uuid" },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every decision that contributed, each naming the office held. An auditor reading only this event can verify separation of duties without joining anything.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["decidedBy", "roleHeld", "decidedAt", "assuranceLevel"],
+        "properties": {
+          "decidedBy": { "type": "string", "format": "uuid" },
+          "roleHeld": {
+            "enum": ["forest_committee_chair", "president", "field_worker", "administrator"]
+          },
+          "decidedAt": { "type": "string", "format": "date-time" },
+          "assuranceLevel": { "enum": ["aal1", "aal2", "aal3"] }
+        }
+      }
+    }
+  }
+}

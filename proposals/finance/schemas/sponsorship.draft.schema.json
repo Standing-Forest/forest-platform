@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/finance/sponsorship.draft.schema.json",
+  "title": "Sponsorship (DRAFT)",
+  "description": "A commitment to support a specific tree for a term, carrying an obligation to report on it (SPON-001). Distinct from a donation, which promises nothing in return. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sponsorshipId",
+    "homeInstanceId",
+    "treeId",
+    "amount",
+    "termStart",
+    "termEnd",
+    "status"
+  ],
+  "properties": {
+    "sponsorshipId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "treeId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "SPON-002: the tree must be sponsorable — on land with an approved boundary and an established authority to commit it."
+    },
+    "sponsorPartyId": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "Set if the sponsor is a known party. A one-off card sponsor may have no party record."
+    },
+    "sponsorDisplayName": {
+      "type": ["string", "null"],
+      "description": "How the sponsor wishes to be shown, if at all. Null means anonymous."
+    },
+    "sponsorEmail": {
+      "type": ["string", "null"],
+      "format": "email",
+      "description": "Required for a sponsorship, since the reporting obligation cannot be met without a way to reach them. Optional for a pure donation."
+    },
+    "amount": {
+      "$ref": "https://forest.example/schemas/core/money.schema.json",
+      "description": "Reuses the APPROVED money schema unchanged: integer minor units, ISO-4217 currency (ADR-027)."
+    },
+    "termStart": { "type": "string", "format": "date" },
+    "termEnd": { "type": "string", "format": "date" },
+    "reportingIntervalDays": {
+      "type": ["integer", "null"],
+      "exclusiveMinimum": 0,
+      "description": "How often an observation of this tree is promised. DELIBERATELY has no default: what is promised to a sponsor is a policy decision with legal weight (open question 3). If this is null, no reporting frequency has been promised and none should be implied in any sponsor-facing copy."
+    },
+    "status": {
+      "enum": ["pending_payment", "active", "lapsed", "refunded", "cancelled"],
+      "description": "Cannot be 'active' without a succeeded payment, enforced by a database trigger (SPON-003). A refund or chargeback must move it out of 'active'."
+    },
+    "isDonation": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for a gift with nothing promised in return. Donations and sponsorships have different tax treatment and different obligations, so they are distinguished rather than conflated."
+    }
+  }
+}

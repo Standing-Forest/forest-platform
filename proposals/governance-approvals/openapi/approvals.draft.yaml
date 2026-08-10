@@ -1,0 +1,115 @@
+# DRAFT — proposed, not approved. Merge into openapi/root.yaml after review.
+
+openapi: 3.1.0
+info:
+  title: Forest Platform API — staff roles and approvals (DRAFT)
+  version: 0.1.0-draft
+servers:
+  - url: /api/v1
+
+paths:
+  /staff-roles:
+    post:
+      operationId: assignStaffRole
+      summary: Assign an office to a party
+      description: >
+        Grants approving authority, so it is at least as sensitive as approving.
+        The first assignment in a tenant cannot itself be controlled — see the
+        bootstrap problem in the proposal README.
+      x-domain-owner: security
+      x-requirement-ids: [GOV-001]
+      x-risk-level: critical
+      x-audit-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/staff-role.draft.schema.json"
+      responses:
+        "201": { description: Assigned }
+        "409": { description: That office is already held }
+
+  /staff-roles/{staffRoleId}/revocation:
+    post:
+      operationId: revokeStaffRole
+      summary: Revoke an office
+      description: >
+        Deliberately requires no approval. Removing authority from someone who
+        has left or is compromised must never wait on a committee.
+      x-domain-owner: security
+      x-requirement-ids: [GOV-001]
+      x-risk-level: high
+      x-audit-required: true
+      parameters:
+        - name: staffRoleId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "204": { description: Revoked }
+
+  /approval-requests:
+    post:
+      operationId: requestApproval
+      summary: Raise something for approval
+      description: >
+        Under dual_control the Forest Committee Chair raises the request and the
+        President decides. The request names the exact resource version, never
+        the parent resource.
+      x-domain-owner: security
+      x-requirement-ids: [GOV-002, GOV-004]
+      x-risk-level: low
+      x-audit-required: true
+      x-idempotency-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/approval-request.draft.schema.json"
+      responses:
+        "201": { description: Raised }
+        "409": { description: An open request already exists for this resource version }
+
+    get:
+      operationId: listApprovalRequests
+      summary: List approval requests
+      description: The President's queue of things awaiting a decision.
+      x-domain-owner: security
+      x-requirement-ids: [GOV-005]
+      x-risk-level: low
+      parameters:
+        - name: state
+          in: query
+          schema: { enum: [pending, granted, rejected, expired, superseded] }
+      responses:
+        "200": { description: Requests }
+
+  /approval-requests/{approvalRequestId}/decisions:
+    post:
+      operationId: decideApproval
+      summary: Approve or reject a request
+      description: >
+        Requires aal3. The requester may never decide their own request, and a
+        role not listed in the policy may not approve — both enforced in the
+        database as well as in the service.
+      x-domain-owner: security
+      x-requirement-ids: [GOV-001, GOV-003, GOV-005]
+      x-risk-level: critical
+      x-audit-required: true
+      parameters:
+        - name: approvalRequestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/approval-decision.draft.schema.json"
+      responses:
+        "201": { description: Decision recorded }
+        "403": { description: APPROVAL_SELF_NOT_PERMITTED or APPROVAL_ROLE_NOT_AUTHORIZED }
+        "409": { description: APPROVAL_ALREADY_DECIDED or APPROVAL_EXPIRED }

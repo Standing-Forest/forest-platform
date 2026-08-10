@@ -1,0 +1,61 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into permissions.json only after review.",
+  "version": "0.1.0-draft",
+  "_note": "parcel.submit_boundary, parcel.approve_boundary and tree.register are ALREADY APPROVED and are not restated. These add the operations those permissions imply but which no permission covers.",
+  "permissions": [
+    {
+      "code": "evidence.upload",
+      "resourceType": "evidence_asset",
+      "action": "create",
+      "riskLevel": "medium",
+      "requirementIds": ["EVID-003"],
+      "_note": "Grants an upload URL. The asset is unusable until its digest is verified."
+    },
+    {
+      "code": "evidence.read",
+      "resourceType": "evidence_asset",
+      "action": "read",
+      "riskLevel": "medium",
+      "requirementIds": ["EVID-001", "EVID-004"],
+      "_note": "Photographs may show people and dwellings. Must pass resourceInstanceId for the SEC-006 tenant check."
+    },
+    {
+      "code": "parcel.create",
+      "resourceType": "parcel",
+      "action": "create",
+      "riskLevel": "medium",
+      "requirementIds": ["GEO-002"]
+    },
+    {
+      "code": "parcel.read",
+      "resourceType": "parcel",
+      "action": "read",
+      "riskLevel": "low",
+      "requirementIds": ["GEO-002"]
+    },
+    {
+      "code": "tree.read",
+      "resourceType": "tree",
+      "action": "read",
+      "riskLevel": "low",
+      "requirementIds": ["TREE-002", "TREE-003"],
+      "_note": "Exact coordinates require tree.read_precise_location; this returns reduced precision."
+    },
+    {
+      "code": "tree.read_precise_location",
+      "resourceType": "tree",
+      "action": "read",
+      "riskLevel": "high",
+      "requirementIds": ["TREE-003"],
+      "_note": "Separated deliberately. Staff and caretakers need exact locations; sponsors and the public must not have them."
+    },
+    {
+      "code": "tree.observe",
+      "resourceType": "tree_observation",
+      "action": "create",
+      "riskLevel": "medium",
+      "requirementIds": ["TREE-002", "TREE-004"],
+      "_note": "The caretaker's core daily action: record condition and photographs."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/finance/payment.draft.schema.json",
+  "title": "Payment (DRAFT)",
+  "description": "Money in, as reported by the payment provider (FIN-006). DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "paymentId",
+    "homeInstanceId",
+    "provider",
+    "providerPaymentRef",
+    "amount",
+    "status"
+  ],
+  "properties": {
+    "paymentId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "sponsorshipId": { "type": ["string", "null"], "format": "uuid" },
+    "provider": { "type": "string", "examples": ["stripe"] },
+    "providerPaymentRef": {
+      "type": "string",
+      "description": "The provider's identifier. Unique per provider so a retried webhook cannot post the same payment twice."
+    },
+    "amount": { "$ref": "https://forest.example/schemas/core/money.schema.json" },
+    "feeMinorUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Provider fee, recorded separately so the ledger can show gross and net rather than quietly netting them."
+    },
+    "status": { "enum": ["pending", "succeeded", "failed", "refunded", "charged_back"] },
+    "ledgerTransactionId": { "type": ["string", "null"], "format": "uuid" },
+    "receivedAt": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "_notDefinedDeliberately": {
+    "cardNumber": "Never. Card details go directly from the sponsor's browser to the provider's hosted checkout and never reach this platform (FIN-006).",
+    "maskedPan": "Excluded too. Even a masked PAN or BIN widens PCI scope for no product benefit.",
+    "cardholderAddress": "Excluded. The provider holds what it needs for fraud checks and tax."
+  }
+}

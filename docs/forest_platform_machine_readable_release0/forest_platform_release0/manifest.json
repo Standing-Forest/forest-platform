@@ -12,7 +12,7 @@
     },
     {
       "path": "database/0001_foundation.sql",
-      "sha256": "24702af54cb3474d61808d76011d15c666ba0168d12a00b600ae4cda0a50ff43"
+      "sha256": "761a32b6e250dfa42095aa1b0e04097e838c6de16171c9891e42a28c2b6a6c20"
     },
     {
       "path": "database/schema.foundation.ts",

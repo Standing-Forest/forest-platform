@@ -1,0 +1,8 @@
+requirement_id,adr_ids,api,database,event,test
+PARTY-001,ADR-005;ADR-019,POST /parties,parties.parties,PartyRegistered,TEST-PARTY-001
+PARTY-002,ADR-011;ADR-029,POST /parties,parties.parties.identity_evidence,PartyRegistered,TEST-PARTY-002
+PARTY-003,ADR-014,GET /parties/{partyId},parties.parties,,TEST-PARTY-003
+LAND-001,ADR-005;ADR-016,POST /parcels/{parcelId}/land-roles,parties.land_roles,LandRoleAsserted,TEST-LAND-001
+LAND-002,ADR-014;ADR-029,POST /parcels/{parcelId}/land-roles,parties.land_roles.conveys_authority_to_commit,LandRoleAsserted,TEST-LAND-002
+CONSENT-002,ADR-016,POST /parties,parties.consent_grants,ConsentGranted,TEST-CONSENT-002
+CONSENT-003,ADR-005;ADR-016,POST /parties/{partyId}/consent-grants/{consentGrantId}/withdrawal,parties.consent_grants.withdrawn_at,ConsentWithdrawn,TEST-CONSENT-003

@@ -23,6 +23,7 @@ WORKDIR /app
 # for local use; a real deployment must wire a PrincipalResolver first.
 ENV NODE_ENV=production
 ENV SPEC_ROOT=/app/docs/forest_platform_machine_readable_release0/forest_platform_release0
+ENV WEB_ROOT=/app/web
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
@@ -33,6 +34,9 @@ COPY --from=builder /app/dist ./dist
 # The specification package is read at runtime — it is the source of truth for
 # error statuses, permissions and the event envelope, not a build-time input.
 COPY docs ./docs
+# The UI is served as static files. branding.json is read by the browser, so it
+# can be swapped by mounting a volume over it without rebuilding the image.
+COPY web ./web
 
 RUN addgroup -S forest && adduser -S forest -G forest && chown -R forest:forest /app
 USER forest

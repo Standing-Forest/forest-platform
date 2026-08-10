@@ -1,0 +1,46 @@
+{
+  "_comment": "Edit this file to rebrand the whole site. No code changes needed. Save, then refresh the page.",
+
+  "organizationName": "Verdant Canopy Trust",
+  "shortName": "Verdant",
+  "tagline": "Standing forest is worth more than felled forest.",
+  "mission": "We work alongside smallholder farmers in the Amazon basin to keep primary rainforest standing — paying for verified conservation, tree by tree, parcel by parcel.",
+
+  "logo": {
+    "_comment": "Set imageUrl to your own logo (e.g. 'assets/logo.png') to replace the built-in mark.",
+    "imageUrl": "",
+    "emoji": "🌿"
+  },
+
+  "colors": {
+    "_comment": "Any valid CSS colour. These drive the entire palette.",
+    "primary": "#1f6f4a",
+    "primaryDark": "#145035",
+    "accent": "#d98a2b",
+    "ink": "#16241d",
+    "muted": "#5d6f66",
+    "surface": "#ffffff",
+    "canvas": "#f4f7f4",
+    "border": "#dde5df"
+  },
+
+  "contact": {
+    "email": "hello@example.org",
+    "phone": "",
+    "location": "Manaus, Amazonas, Brazil"
+  },
+
+  "donation": {
+    "currency": "USD",
+    "currencySymbol": "$",
+    "suggestedAmounts": [25, 75, 200, 500],
+    "perTreeCost": 4.5
+  },
+
+  "impactHeadlines": [
+    { "label": "Hectares under protection", "value": "12,480" },
+    { "label": "Farmers enrolled", "value": "317" },
+    { "label": "Trees registered", "value": "94,220" },
+    { "label": "Paid to farmers this year", "value": "$1.24M" }
+  ]
+}

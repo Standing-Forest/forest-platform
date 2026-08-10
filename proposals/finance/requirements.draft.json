@@ -1,0 +1,97 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into requirements.json only after review.",
+  "version": "0.1.0-draft",
+  "_note": "FIN-001 (append-only double-entry ledger) is ALREADY APPROVED and is not restated. These entries add what FIN-001 needs in order to be satisfiable, plus the flows around it.",
+  "requirements": [
+    {
+      "id": "FIN-002",
+      "title": "Every ledger transaction balances to zero per currency",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "FIN-001 approves double-entry but defines no accounts, entries or balance rule, and LEDGER_TRANSACTION_UNBALANCED is unreachable. Enforced by a deferred database constraint so an unbalanced transaction cannot be committed even by faulty application code. An unbalanced ledger means the platform cannot say where the money is.",
+      "relatedAdrs": ["ADR-026", "ADR-027"]
+    },
+    {
+      "id": "FIN-003",
+      "title": "Ledger entries are append-only; corrections are reversing entries",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "No UPDATE or DELETE on posted entries, enforced by trigger. A mistake is corrected by a new transaction that references what it reverses, so the history of a correction is itself auditable.",
+      "relatedAdrs": ["ADR-026", "ADR-005"]
+    },
+    {
+      "id": "FIN-004",
+      "title": "Amounts are integer minor units with an explicit currency",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "ADR-027 approves integer money and explicit FX. Reuses the approved money.schema.json unchanged. No floating point anywhere in the finance domain.",
+      "relatedAdrs": ["ADR-027"]
+    },
+    {
+      "id": "FIN-005",
+      "title": "Currency conversion records the rate, its source and its timestamp",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "Sponsors pay in one currency and payees are paid in another. A conversion whose rate cannot be reproduced later is not auditable, and the difference accrues to somebody.",
+      "relatedAdrs": ["ADR-027"]
+    },
+    {
+      "id": "FIN-006",
+      "title": "Card data never touches the platform",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "security",
+      "rationale": "Payment is taken through a hosted checkout so card details go directly to a licensed provider. The platform stores only a provider reference. This keeps PCI scope minimal and removes an entire class of breach from the codebase.",
+      "relatedAdrs": ["ADR-011"]
+    },
+    {
+      "id": "FIN-007",
+      "title": "Payouts require a granted dual-control approval bound to the exact batch",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "finance.payout.approve is already approved as critical, aal3, dual_control. Execution without a granted approval is refused by a database constraint, and the approval binds to the specific batch so lines cannot be added after approval.",
+      "relatedAdrs": ["ADR-014", "ADR-026"]
+    },
+    {
+      "id": "FIN-008",
+      "title": "Payees are verified before they can be paid",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "The provider performs KYB on a business before it may receive funds. The platform records verification status and refuses payment to an unverified payee. OPEN QUESTION: sanctions screening obligations remain with the organization.",
+      "relatedAdrs": ["ADR-014"]
+    },
+    {
+      "id": "SPON-001",
+      "title": "A sponsorship is a commitment with a reporting obligation",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "Telling a sponsor 'your tree is cared for' is a material claim under EVID-001. A sponsorship therefore carries an explicit reporting obligation traceable to tree observations, so the promise can be checked rather than assumed.",
+      "relatedAdrs": ["ADR-029"]
+    },
+    {
+      "id": "SPON-002",
+      "title": "Only trees on approved land may be sponsored",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "Accepting money against land whose boundary has not been approved, or whose authority to commit was never established, sells something that may not exist. Requires an approved boundary (GEO-002) and a party holding an authority-bearing land role (LAND-002).",
+      "relatedAdrs": ["ADR-029", "ADR-014"]
+    },
+    {
+      "id": "SPON-003",
+      "title": "Refunds and chargebacks reverse both the ledger and the sponsorship",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "finance",
+      "rationale": "A refunded or charged-back payment must not leave an active sponsorship, or a sponsor retains a tree they did not pay for and the platform's public counts overstate reality.",
+      "relatedAdrs": ["ADR-026"]
+    }
+  ]
+}

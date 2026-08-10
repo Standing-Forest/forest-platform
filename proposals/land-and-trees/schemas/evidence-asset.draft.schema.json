@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/proposals/schemas/evidence/evidence-asset.draft.schema.json",
+  "title": "EvidenceAsset (DRAFT)",
+  "description": "An immutable stored original — a photograph, document or recording — identified by its content digest. DRAFT — not approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidenceAssetId",
+    "homeInstanceId",
+    "checksumSha256",
+    "mediaType",
+    "byteSize",
+    "status",
+    "capturedBy",
+    "recordedAt"
+  ],
+  "properties": {
+    "evidenceAssetId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "checksumSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Computed by the client before upload and verified by the server against the stored object. Two uploads of identical bytes are one asset."
+    },
+    "mediaType": { "type": "string", "examples": ["image/jpeg", "application/pdf", "audio/mp4"] },
+    "byteSize": { "type": "integer", "minimum": 1 },
+    "status": {
+      "enum": ["pending_upload", "verified", "rejected", "superseded", "withheld"],
+      "description": "Only 'verified' assets may be cited. 'withheld' hides an asset from serving without deleting it — see open question 5."
+    },
+    "storageKey": {
+      "type": "string",
+      "description": "Opaque object storage key. Never a public URL: access is always brokered through a short-lived signed URL after a permission check."
+    },
+    "capturedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the photograph was taken, which may be long before it was uploaded (ADR-028 offline capture)."
+    },
+    "capturedBy": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Party or actor who captured it."
+    },
+    "captureLocation": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "description": "Where it was captured, if the device recorded it. Subject to TREE-003 precision reduction on read.",
+      "properties": {
+        "latitude": { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "accuracyMetres": { "type": "number", "minimum": 0 }
+      }
+    },
+    "dataClassification": {
+      "enum": ["public", "internal", "confidential", "restricted", "cultural_restricted"],
+      "description": "A photograph showing a person or dwelling is not public. ADR-016 may require cultural_restricted."
+    },
+    "supersededByEvidenceAssetId": { "type": ["string", "null"], "format": "uuid" },
+    "recordedAt": { "type": "string", "format": "date-time" }
+  },
+  "_note": "EXIF is deliberately not modeled as structured fields. Camera metadata routinely contains precise GPS and device identifiers; extracting it into queryable columns would spread location data the platform is otherwise careful to reduce."
+}

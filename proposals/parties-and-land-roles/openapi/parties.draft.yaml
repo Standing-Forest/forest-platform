@@ -1,0 +1,121 @@
+# DRAFT — proposed, not approved. Merge into openapi/root.yaml after review.
+#
+# Uses the same x- extensions the approved root.yaml uses, so these operations
+# carry their requirement ids, risk level and audit flags the way existing ones do.
+
+openapi: 3.1.0
+info:
+  title: Forest Platform API — parties and land roles (DRAFT)
+  version: 0.1.0-draft
+servers:
+  - url: /api/v1
+
+paths:
+  /parties:
+    post:
+      operationId: registerParty
+      summary: Register a person or organization, with their consent grant
+      x-domain-owner: field-operations
+      x-requirement-ids: [PARTY-001, CONSENT-002]
+      x-risk-level: high
+      x-audit-required: true
+      x-idempotency-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [party, consentGrant]
+              properties:
+                party:
+                  $ref: "../schemas/party.draft.schema.json"
+                consentGrant:
+                  $ref: "../schemas/consent-grant.draft.schema.json"
+      responses:
+        "201":
+          description: Registered
+        "409":
+          description: PARTY_ALREADY_REGISTERED
+        "422":
+          description: CONSENT_GRANT_REQUIRED
+
+  /parties/{partyId}:
+    get:
+      operationId: readParty
+      summary: Read a party
+      description: >
+        The platform's first read of an existing tenant-owned resource. The
+        implementing route MUST pass the party's home instance as
+        resourceInstanceId so the SEC-006 cross-tenant check actually runs.
+      x-domain-owner: field-operations
+      x-requirement-ids: [PARTY-001, PARTY-003]
+      x-risk-level: medium
+      x-audit-required: true
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: The party as of now
+        "403":
+          description: Belongs to another tenant
+        "404":
+          description: Not found
+
+  /parcels/{parcelId}/land-roles:
+    post:
+      operationId: assertLandRole
+      summary: Assert that a party is the farmer, landowner or controller of a parcel
+      description: >
+        BLOCKED — forests.parcels does not exist (GEO-001 has no tables), so
+        parcelId cannot be validated against anything. This operation cannot be
+        implemented before GEO-001 is completed.
+      x-domain-owner: field-operations
+      x-requirement-ids: [LAND-001, LAND-002]
+      x-risk-level: critical
+      x-audit-required: true
+      x-idempotency-required: true
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/land-role.draft.schema.json"
+      responses:
+        "201":
+          description: Role asserted
+        "409":
+          description: LAND_ROLE_CONFLICT
+
+  /parties/{partyId}/consent-grants/{consentGrantId}/withdrawal:
+    post:
+      operationId: withdrawConsent
+      summary: Withdraw a consent grant
+      description: >
+        Deliberately carries no step-up requirement and no approval policy. A
+        person withdrawing consent must never be obstructed by process.
+      x-domain-owner: consent
+      x-requirement-ids: [CONSENT-003]
+      x-risk-level: high
+      x-audit-required: true
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: consentGrantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "204":
+          description: Withdrawn; all processing under this grant stops

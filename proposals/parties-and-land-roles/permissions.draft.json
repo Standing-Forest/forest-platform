@@ -1,0 +1,61 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into permissions.json only after review.",
+  "version": "0.1.0-draft",
+  "permissions": [
+    {
+      "code": "party.register",
+      "resourceType": "party",
+      "action": "create",
+      "riskLevel": "high",
+      "requirementIds": ["PARTY-001", "CONSENT-002"],
+      "_note": "Enrollment leads to payments. OPEN QUESTION: dual control may be warranted. Note the platform refuses any permission carrying an approvalPolicy until an approval contract exists."
+    },
+    {
+      "code": "party.read",
+      "resourceType": "party",
+      "action": "read",
+      "riskLevel": "medium",
+      "requirementIds": ["PARTY-001", "PARTY-003"],
+      "_note": "Reads personal data. The route implementing this MUST pass the party's home instance as resourceInstanceId so the SEC-006 check actually runs."
+    },
+    {
+      "code": "party.update",
+      "resourceType": "party",
+      "action": "update",
+      "riskLevel": "high",
+      "requirementIds": ["PARTY-001"],
+      "_note": "Supersedes a bitemporal version rather than mutating a row in place."
+    },
+    {
+      "code": "land_role.assert",
+      "resourceType": "land_role",
+      "action": "create",
+      "riskLevel": "critical",
+      "requirementIds": ["LAND-001", "LAND-002"],
+      "_note": "Determines who may commit land and, downstream, who is paid. A prime fraud target. OPEN QUESTION: strong candidate for dual control and aal3, deliberately left off pending review because the platform would then refuse the operation outright."
+    },
+    {
+      "code": "land_role.read",
+      "resourceType": "land_role",
+      "action": "read",
+      "riskLevel": "medium",
+      "requirementIds": ["LAND-001", "PARTY-003"]
+    },
+    {
+      "code": "consent.grant",
+      "resourceType": "consent_grant",
+      "action": "create",
+      "riskLevel": "critical",
+      "requirementIds": ["CONSENT-002"],
+      "_note": "Recording that a person agreed to something. Getting this wrong is not recoverable by a later correction."
+    },
+    {
+      "code": "consent.withdraw",
+      "resourceType": "consent_grant",
+      "action": "update",
+      "riskLevel": "high",
+      "requirementIds": ["CONSENT-003"],
+      "_note": "Deliberately NOT gated behind step-up or dual control: a person withdrawing consent must never be obstructed by process."
+    }
+  ]
+}

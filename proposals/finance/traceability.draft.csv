@@ -1,0 +1,11 @@
+requirement_id,adr_ids,api,database,event,test
+FIN-002,ADR-026;ADR-027,POST /internal/ledger-transactions,finance.entries,LedgerTransactionPosted,TEST-FIN-002
+FIN-003,ADR-026;ADR-005,POST /internal/ledger-transactions,finance.transactions.reverses_transaction_id,LedgerTransactionPosted,TEST-FIN-003
+FIN-004,ADR-027,POST /internal/ledger-transactions,finance.entries.amount_minor_units,,TEST-FIN-004
+FIN-005,ADR-027,POST /internal/ledger-transactions,finance.transactions.fx_rate,,TEST-FIN-005
+FIN-006,ADR-011,POST /webhooks/payments/{provider},finance.payments,PaymentReceived,TEST-FIN-006
+FIN-007,ADR-014;ADR-026,POST /payout-batches/{id}/execution,finance.payout_batches.approval_request_id,PayoutExecuted,TEST-FIN-007
+FIN-008,ADR-014,POST /payee-accounts,finance.payee_accounts.verification_status,,TEST-FIN-008
+SPON-001,ADR-029,POST /sponsorships;GET /sponsorships/{id},finance.sponsorships,SponsorshipActivated,TEST-SPON-001
+SPON-002,ADR-029;ADR-014,POST /sponsorships,forests.trees.sponsorable,,TEST-SPON-002
+SPON-003,ADR-026,POST /webhooks/payments/{provider},finance.sponsorships.status,SponsorshipLapsed,TEST-SPON-003

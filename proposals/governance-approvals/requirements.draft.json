@@ -1,0 +1,51 @@
+{
+  "_status": "DRAFT — proposed, not approved. Merge into requirements.json only after review.",
+  "version": "0.1.0-draft",
+  "requirements": [
+    {
+      "id": "GOV-001",
+      "title": "Staff roles are held by parties for a period and recorded at decision time",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "security",
+      "rationale": "Approving authority belongs to an office — Forest Committee Chair, President — not permanently to a person. Roles are assignable and revocable, and every approval records the role held at the moment of decision so a later change of office never rewrites the history of a decision.",
+      "relatedAdrs": ["ADR-005", "ADR-014"]
+    },
+    {
+      "id": "GOV-002",
+      "title": "Approval policies are data, not code",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "security",
+      "rationale": "permissions.json already names dual_control and ai_release_review but never defines them. Defining them as records means the control can be tightened — raising minimum_approvals when a third authorized person exists — without a code change, consistent with how the rest of the platform treats the specification as the source of truth.",
+      "relatedAdrs": ["ADR-014"]
+    },
+    {
+      "id": "GOV-003",
+      "title": "A requester may never approve their own request",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "security",
+      "rationale": "Separation of duties is the entire point of dual control. Enforced by a database constraint as well as in code, because a control that lives only in application logic is one refactor away from being lost.",
+      "relatedAdrs": ["ADR-014"]
+    },
+    {
+      "id": "GOV-004",
+      "title": "Approvals bind to the exact resource version being approved",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "security",
+      "rationale": "Approving a parcel rather than a specific boundary version would let a submitter replace the boundary after approval and inherit it. Approvals therefore reference the immutable version identifier.",
+      "relatedAdrs": ["ADR-005", "ADR-006"]
+    },
+    {
+      "id": "GOV-005",
+      "title": "Approval decisions are append-only and auditable",
+      "priority": "critical",
+      "status": "proposed",
+      "owner": "quality",
+      "rationale": "A decision is never updated or deleted. Reconsideration supersedes the request and raises a new one, so an audit can always answer who approved what, when, and in what capacity. Supports TEST-018 release certification.",
+      "relatedAdrs": ["ADR-005", "ADR-006"]
+    }
+  ]
+}
