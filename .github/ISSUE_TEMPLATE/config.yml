@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/OWNER/REPO/security/advisories/new
+    url: https://github.com/Standing-Forest/forest-platform/security/advisories/new
     about: Report privately. Never open a public issue for a security problem.
   - name: Known missing contracts
-    url: https://github.com/OWNER/REPO/blob/main/CONTRACT-GAPS.md
+    url: https://github.com/Standing-Forest/forest-platform/blob/main/CONTRACT-GAPS.md
     about: A 409 SPECIFICATION_CONTRACT_MISSING is usually documented here, not a bug.
