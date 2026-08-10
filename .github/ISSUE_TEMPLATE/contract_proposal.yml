@@ -1,0 +1,62 @@
+name: Contract proposal
+description: Propose a specification contract that does not exist yet
+labels: [contract-proposal]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when the platform refuses an operation because its contract is
+        missing, and you want to propose what that contract should be.
+
+        Under **DEV-AI-001** nobody adds contracts to the approved package
+        directly. Proposals live in `proposals/` as marked drafts until a human
+        with authority approves them. See `proposals/README.md` for the shape.
+
+  - type: textarea
+    id: capability
+    attributes:
+      label: What capability is blocked
+      description: What can't the platform do, and who needs it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: missing
+    attributes:
+      label: Which artifacts are missing
+      description: |
+        If the platform returned a 409, paste its `missingArtifacts` list — it
+        names them precisely.
+    validations:
+      required: true
+
+  - type: textarea
+    id: shape
+    attributes:
+      label: Proposed shape
+      description: Sketch the records, operations and events. Rough is fine.
+    validations:
+      required: false
+
+  - type: textarea
+    id: open-questions
+    attributes:
+      label: Open questions
+      description: |
+        **The most important field.** Which decisions can't legitimately be made
+        by whoever implements this — legal, cultural, financial or policy
+        questions that need a human with authority? Naming them is more valuable
+        than guessing at them.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Does this touch any of the following?
+      options:
+        - label: Personal data of farmers, caretakers or landowners
+        - label: Consent, or cultural governance (ADR-016)
+        - label: Land tenure or authority to commit land
+        - label: Money in or out
+        - label: Precise geographic locations

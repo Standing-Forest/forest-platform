@@ -1,0 +1,56 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing: a **409 `SPECIFICATION_CONTRACT_MISSING`** response is
+        usually not a bug. It means the operation has no approved contract yet —
+        see `CONTRACT-GAPS.md`. Likewise, most screens in the web UI are marked
+        **Demo** and are intentionally not connected to anything.
+
+        **Never include real personal data, real coordinates, or photographs of
+        real land.** Use invented examples.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Include the response body and the `correlationId` if there is one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. docker compose up -d --build
+        2. curl -XPOST ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I have not included any real personal data or land coordinates
+          required: true
+        - label: I checked CONTRACT-GAPS.md and this is not a documented missing contract
+          required: false

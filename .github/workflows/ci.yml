@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Typecheck, test and validate the specification
+    runs-on: ubuntu-latest
+
+    services:
+      # PostGIS is required: the schema creates the extension, and integration
+      # tests exercise real geography.
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: forest_platform
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U postgres -d forest_platform"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      NODE_ENV: development
+      AUTH_MODE: dev-headers
+      LOG_LEVEL: silent
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/forest_platform
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Apply the approved migrations
+        run: npm run migrate
+
+      - name: Seed the development instance
+        run: npm run seed
+
+      - name: Test
+        run: npm test
+
+      - name: Validate the specification package
+        run: python docs/forest_platform_machine_readable_release0/forest_platform_release0/scripts/validate_specifications.py
+
+      - name: Verify the specification package checksums
+        run: |
+          cd docs/forest_platform_machine_readable_release0/forest_platform_release0
+          python - <<'PY'
+          import json, hashlib, pathlib, sys
+          manifest = json.load(open('manifest.json'))
+          bad = [f['path'] for f in manifest['files']
+                 if hashlib.sha256(pathlib.Path(f['path']).read_bytes()).hexdigest() != f['sha256']]
+          if bad:
+              print('manifest checksum mismatch:', bad)
+              sys.exit(1)
+          print(f"{len(manifest['files'])} specification files verified")
+          PY
+
+      - name: Verify CONTRACT-GAPS.md is up to date
+        run: |
+          npm run gaps
+          git diff --exit-code CONTRACT-GAPS.md \
+            || (echo "CONTRACT-GAPS.md is stale — run 'npm run gaps' and commit the result" && exit 1)
+
+  draft-migrations:
+    name: Draft proposal migrations apply cleanly
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: draft_check
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U postgres -d draft_check"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install psql
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      # Proposals are not approved and are not applied by the application, but
+      # a draft migration that does not even parse is not reviewable.
+      - name: Apply approved then draft migrations in order
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -e
+          SPEC=docs/forest_platform_machine_readable_release0/forest_platform_release0/database/0001_foundation.sql
+          for f in "$SPEC" \
+                   proposals/parties-and-land-roles/database/0002_parties.draft.sql \
+                   proposals/land-and-trees/database/0003_land_and_trees.draft.sql \
+                   proposals/governance-approvals/database/0004_governance.draft.sql \
+                   proposals/finance/database/0005_finance.draft.sql; do
+            echo "applying $f"
+            psql -h localhost -U postgres -d draft_check -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+
+  docker:
+    name: Container image builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: docker build -t forest-platform:ci .
