@@ -181,6 +181,14 @@ not invent contracts, and anything requiring a contract that does not exist is a
 
 Security issues: see [SECURITY.md](SECURITY.md) — please report privately.
 
+## Who maintains this
+
+**Standing Forest** — an informal group of contributors. It is not a company,
+charity or other legal entity, holds no assets, and speaks for no employer.
+Copyright rests with the individual authors, who license their contributions
+under Apache-2.0. See [NOTICE](NOTICE).
+
 ## Licence
 
-[Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for authorship disclosure.
+[Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for authorship disclosure,
+including the project's use of AI assistance.

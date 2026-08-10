@@ -1,16 +1,34 @@
 Forest Platform
-Copyright 2026 Brian Lue
+Copyright 2026 The Standing Forest Authors
 
 Licensed under the Apache License, Version 2.0 (see LICENSE).
 
 ------------------------------------------------------------------------------
 
-Portions of this project, including source code, specification artifacts under
-docs/, and draft contract proposals under proposals/, were authored with
-substantial assistance from Anthropic's Claude, directed by the copyright
-holder. This is disclosed for transparency; it does not alter the license terms
-above.
+About the copyright holder
 
+"Standing Forest" is an informal group of contributors, not a company,
+partnership, charity or other legal entity. It holds no assets, has no members
+in any legal sense, and cannot enter into agreements.
+
+"The Standing Forest Authors" is therefore shorthand for the individuals who
+have contributed to this project, each retaining copyright in their own
+contributions and licensing them under the Apache License 2.0. It is not a
+claim that any organisation owns this work.
+
+Nothing published under this name should be read as a representation by any
+company or charitable organisation, and no contributor speaks for any employer.
+
+------------------------------------------------------------------------------
+
+Authorship disclosure
+
+Portions of this project, including source code, the specification artifacts
+under docs/, and the draft contract proposals under proposals/, were authored
+with substantial assistance from Anthropic's Claude, directed by the project's
+originating author.
+
+This is disclosed for transparency and does not alter the license terms above.
 Contributors should be aware that in some jurisdictions material lacking
-sufficient human authorship may not attract copyright protection. This does not
-restrict use of this project under the Apache License.
+sufficient human authorship may not attract copyright protection; this does not
+restrict anyone's use of the project under the Apache License.
