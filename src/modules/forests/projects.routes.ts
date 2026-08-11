@@ -63,7 +63,14 @@ export function registerProjectRoutes(
 
   app.post<{ Body: CreateProjectBody }>(
     "/projects",
-    { schema: { body: createProjectBodySchema } },
+    {
+      schema: { body: createProjectBodySchema },
+      // Tighter than the global default. This route authorizes, writes and
+      // emits an event; nobody legitimately creates twenty projects a minute,
+      // and a lower ceiling limits both permission brute-forcing and the blast
+      // radius of a runaway client.
+      config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+    },
     async (request, reply) => {
       const principal = request.principal;
       authorize(principal, "project.create");

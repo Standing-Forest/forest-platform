@@ -41,6 +41,12 @@ const BOUNDARY_GAP = registerContractGap({
 export function registerParcelRoutes(app: FastifyInstance): void {
   app.post<{ Params: { parcelId: string } }>(
     "/parcels/:parcelId/boundaries",
+    {
+      // Tighter than the global default: this route authorizes against a
+      // high-risk permission, and boundary submission is a deliberate,
+      // infrequent act by a field worker rather than an automated one.
+      config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+    },
     async (request) => {
       authorize(request.principal, "parcel.submit_boundary");
 
