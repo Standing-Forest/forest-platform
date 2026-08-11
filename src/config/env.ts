@@ -17,6 +17,9 @@ export interface Env {
   logLevel: string;
   outboxPollIntervalMs: number;
   outboxBatchSize: number;
+  /** Requests allowed per window, per client, before 429. */
+  rateLimitMax: number;
+  rateLimitWindowMs: number;
 }
 
 function required(name: string, fallback?: string): string {
@@ -71,5 +74,7 @@ export function loadEnv(): Env {
     logLevel: required("LOG_LEVEL", "info"),
     outboxPollIntervalMs: integer("OUTBOX_POLL_INTERVAL_MS", 1000),
     outboxBatchSize: integer("OUTBOX_BATCH_SIZE", 100),
+    rateLimitMax: integer("RATE_LIMIT_MAX", 100),
+    rateLimitWindowMs: integer("RATE_LIMIT_WINDOW_MS", 60_000),
   };
 }

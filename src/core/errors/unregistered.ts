@@ -10,6 +10,20 @@
 import { registerContractGap } from "../spec/contract-gap.js";
 
 registerContractGap({
+  operation: "rate limiting across multiple instances",
+  missingArtifacts: [
+    "errors.json entry for rate limit exceeded (429)",
+    "shared rate-limit store contract for horizontal scaling",
+  ],
+  blockedRequirementIds: ["SEC-006"],
+  notes:
+    "Rate limiting is in-memory, so the limit applies per process. Running more than one " +
+    "instance multiplies the effective limit by the instance count. A shared store (Redis " +
+    "or equivalent) is needed before scaling horizontally, and the 429 response currently " +
+    "uses an unregistered code.",
+});
+
+registerContractGap({
   operation: "general error catalog coverage",
   missingArtifacts: [
     "errors.json entries for: authentication required, permission denied, resource not found, request body invalid",

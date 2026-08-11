@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import Fastify, { type FastifyInstance } from "fastify";
 import fastifyStatic from "@fastify/static";
+import fastifyRateLimit from "@fastify/rate-limit";
 import { newId } from "./core/ids.js";
 import { AppError } from "./core/errors/app-error.js";
 import { UnregisteredError } from "./core/errors/unregistered.js";
@@ -49,6 +50,31 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     },
   });
 
+  // Routes that authorize must be rate limited, or a permission check becomes
+  // something an attacker can retry indefinitely — and an unauthenticated
+  // caller can exhaust the database connection pool for everyone else.
+  //
+  // The store is in-memory, which means the limit is per process. Running more
+  // than one instance requires a shared store (Redis); that is recorded as a
+  // gap rather than silently assumed.
+  await app.register(fastifyRateLimit, {
+    max: env.rateLimitMax,
+    timeWindow: env.rateLimitWindowMs,
+    // Identify by authenticated actor where there is one, so a shared NAT does
+    // not let one abusive caller lock out an entire village office.
+    keyGenerator: (request) => {
+      const actor = request.headers["x-actor-id"];
+      const id = Array.isArray(actor) ? actor[0] : actor;
+      return id ?? request.ip;
+    },
+    errorResponseBuilder: (_request, context) => ({
+      code: "RATE_LIMIT_EXCEEDED",
+      message: `Too many requests. Retry in ${Math.ceil(context.ttl / 1000)}s.`,
+      specificationRegistered: false,
+      retryable: true,
+    }),
+  });
+
   app.decorateRequest("principal", null);
   app.decorateRequest("correlationId", "");
 
@@ -81,6 +107,21 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         code: "DOMAIN_EVENT_ENVELOPE_INVALID",
         message: "Generated domain event did not satisfy the canonical envelope",
         specificationRegistered: false,
+        correlationId,
+      });
+    }
+
+    // The rate limiter raises a plain object carrying its own status. Without
+    // this it falls through to the generic handler and a throttled caller gets
+    // a 500, which tells them to retry harder rather than to back off.
+    const withStatus = error as { statusCode?: number; code?: string; message?: string };
+    if (withStatus.code === "RATE_LIMIT_EXCEEDED" || withStatus.statusCode === 429) {
+      request.log.warn({ code: "RATE_LIMIT_EXCEEDED", correlationId }, withStatus.message ?? "");
+      return reply.status(429).send({
+        code: "RATE_LIMIT_EXCEEDED",
+        message: withStatus.message ?? "Too many requests",
+        specificationRegistered: false,
+        retryable: true,
         correlationId,
       });
     }

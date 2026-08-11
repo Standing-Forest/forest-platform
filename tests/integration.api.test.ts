@@ -231,6 +231,44 @@ describe("unimplemented operations refuse rather than guess", { skip: !reachable
   });
 });
 
+describe("rate limiting", { skip: !reachable }, () => {
+  it("returns 429, not 500, once a caller exceeds the limit", async () => {
+    // A dedicated app so this cannot consume the shared instance's budget and
+    // make unrelated tests flap.
+    const limited = await buildApp({ env: { ...env, rateLimitMax: 3 }, db });
+    const actor = newId();
+
+    const send = () =>
+      limited.inject({
+        method: "POST",
+        url: "/api/v1/ai/query",
+        headers: { "content-type": "application/json", "x-actor-id": actor },
+        payload: {},
+      });
+
+    // Within budget: the route's own refusal, not a throttle.
+    for (let i = 0; i < 3; i += 1) {
+      assert.equal((await send()).statusCode, 409);
+    }
+
+    const throttled = await send();
+    assert.equal(throttled.statusCode, 429, "a throttled caller must not receive 500");
+    assert.equal(throttled.json().code, "RATE_LIMIT_EXCEEDED");
+    assert.equal(throttled.json().retryable, true);
+
+    // Limits are per caller, so one abusive client cannot lock out another.
+    const other = await limited.inject({
+      method: "POST",
+      url: "/api/v1/ai/query",
+      headers: { "content-type": "application/json", "x-actor-id": newId() },
+      payload: {},
+    });
+    assert.equal(other.statusCode, 409, "a different caller must be unaffected");
+
+    await limited.close();
+  });
+});
+
 describe("contract gap reporting", { skip: !reachable }, () => {
   it("CONTRACT-GAPS.md matches what the running app reports", async () => {
     const { readFileSync } = await import("node:fs");
