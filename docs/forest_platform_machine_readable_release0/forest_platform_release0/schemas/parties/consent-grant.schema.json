@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/schemas/parties/consent-grant.schema.json",
+  "title": "ConsentGrant",
+  "description": "What a party agreed to, when, in what language, and on what evidence. Separate from the party record so consent can be withdrawn without rewriting identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "consentGrantId",
+    "homeInstanceId",
+    "partyId",
+    "permittedUses",
+    "grantedAt",
+    "languageTag",
+    "method"
+  ],
+  "properties": {
+    "consentGrantId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "homeInstanceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "partyId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "scopeParcelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "description": "Null means the grant covers the party's participation generally rather than one parcel."
+    },
+    "permittedUses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "CONSENT-001 record-level permitted uses. OPEN QUESTION 4: this list must come from the form the party physically signs, in their language — not from a schema written in advance.",
+      "items": {
+        "enum": [
+          "conservation_payment",
+          "public_reporting",
+          "research",
+          "partner_sharing"
+        ]
+      }
+    },
+    "grantedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "languageTag": {
+      "type": "string",
+      "description": "BCP 47. Consent obtained in a language the party does not read is not consent, so this is required, not optional."
+    },
+    "method": {
+      "enum": [
+        "written_signature",
+        "thumbprint",
+        "witnessed_verbal",
+        "digital_signature"
+      ],
+      "description": "Witnessed verbal and thumbprint are included because literacy cannot be assumed. Excluding them would exclude the people this platform exists to work with."
+    },
+    "witnessPartyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "description": "Required in practice for witnessed_verbal."
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceAssetId",
+        "checksumSha256"
+      ],
+      "description": "The signed form or recording (EVID-001).",
+      "properties": {
+        "evidenceAssetId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "checksumSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "withdrawnAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "CONSENT-003. Set on withdrawal; the row is never deleted. All processing under permittedUses must stop from this instant."
+    },
+    "withdrawalReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional and must remain so. Requiring a reason to withdraw is a form of obstruction."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "witnessed_verbal"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "witnessPartyId"
+        ]
+      }
+    }
+  ]
+}

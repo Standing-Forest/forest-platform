@@ -11,3 +11,10 @@ export {
   projects,
   outbox,
 } from "../../docs/forest_platform_machine_readable_release0/forest_platform_release0/database/schema.foundation.js";
+
+export {
+  parties,
+  partyRecords,
+  consentGrants,
+  landRoles,
+} from "../../docs/forest_platform_machine_readable_release0/forest_platform_release0/database/schema.parties.js";

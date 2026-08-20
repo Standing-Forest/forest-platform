@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "errors": [
     {
       "code": "PARCEL_BOUNDARY_INVALID",
@@ -54,6 +54,52 @@
       "retryable": false,
       "requirementIds": [
         "DEV-AI-001"
+      ]
+    },
+    {
+      "code": "PARTY_ALREADY_REGISTERED",
+      "httpStatus": 409,
+      "domain": "field-operations",
+      "retryable": false,
+      "requirementIds": [
+        "PARTY-001"
+      ]
+    },
+    {
+      "code": "CONSENT_GRANT_REQUIRED",
+      "httpStatus": 422,
+      "domain": "consent",
+      "retryable": false,
+      "requirementIds": [
+        "CONSENT-002"
+      ]
+    },
+    {
+      "code": "CONSENT_SCOPE_NOT_PERMITTED",
+      "httpStatus": 403,
+      "domain": "consent",
+      "retryable": false,
+      "requirementIds": [
+        "CONSENT-002",
+        "CONSENT-003"
+      ]
+    },
+    {
+      "code": "LAND_AUTHORITY_NOT_ESTABLISHED",
+      "httpStatus": 422,
+      "domain": "field-operations",
+      "retryable": false,
+      "requirementIds": [
+        "LAND-002"
+      ]
+    },
+    {
+      "code": "LAND_ROLE_CONFLICT",
+      "httpStatus": 409,
+      "domain": "field-operations",
+      "retryable": false,
+      "requirementIds": [
+        "LAND-001"
       ]
     }
   ]

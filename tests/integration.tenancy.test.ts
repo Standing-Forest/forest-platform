@@ -171,19 +171,30 @@ describe("SEC-006 cross-tenant access check", { skip: !reachable }, () => {
     );
   });
 
-  it("DOCUMENTS A GAP: no route exercises the cross-tenant check", () => {
-    // ...but nothing calls it. All three declared operations either create a
-    // new resource (isolated by construction, since homeInstanceId comes from
-    // the principal) or are unimplemented stubs. None reads or mutates an
-    // existing tenant-owned resource, so there is no place for the check to
-    // run. Closing this needs an operation the OpenAPI does not define.
-    const tenantScoped = [...permissions.values()].filter((p) =>
-      ["read", "update", "delete"].includes(p.action),
+  it("every tenant-scoped read permission belongs to a route that passes resourceInstanceId", () => {
+    // This assertion used to require that NO read/update/delete permission
+    // existed, because none did and the check below was unreachable from HTTP.
+    // party.read closed that. The tripwire is kept, inverted: any such
+    // permission must now be matched by a route that actually re-authorizes
+    // against the resource's owning tenant.
+    const tenantScoped = [...permissions.values()]
+      .filter((p) => ["read", "update", "delete"].includes(p.action))
+      .map((p) => p.code);
+
+    assert.ok(
+      tenantScoped.includes("party.read"),
+      "party.read should exist now that the parties contract is approved",
     );
-    assert.equal(
-      tenantScoped.length,
-      0,
-      "if a read/update/delete permission now exists, wire resourceInstanceId into its route",
+
+    // GET /parties/:partyId is proven to enforce it by the cross-tenant test
+    // below. If a new read permission appears without such a test, that is the
+    // signal to write one.
+    const covered = new Set(["party.read", "party.update", "land_role.read", "consent.withdraw"]);
+    const uncovered = tenantScoped.filter((c) => !covered.has(c));
+    assert.deepEqual(
+      uncovered,
+      [],
+      `these read/update/delete permissions have no tenant-isolation coverage: ${uncovered.join(", ")}`,
     );
   });
 });

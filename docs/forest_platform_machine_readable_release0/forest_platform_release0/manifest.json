@@ -1,6 +1,6 @@
 {
   "package": "forest-platform-release0",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "files": [
     {
       "path": "README.md",
@@ -15,36 +15,72 @@
       "sha256": "761a32b6e250dfa42095aa1b0e04097e838c6de16171c9891e42a28c2b6a6c20"
     },
     {
+      "path": "database/0002_parties.sql",
+      "sha256": "77fb9e5864569270f89894b794fb6bb3e7e928df2f0af0d165013429206bba4b"
+    },
+    {
       "path": "database/schema.foundation.ts",
       "sha256": "1d47ff7059edab8c973366363ead1da8cc521385a637725744850d3c59aa19b7"
     },
     {
+      "path": "database/schema.parties.ts",
+      "sha256": "486fa719b9bd8dfe91cb8b8134420ce5cdb8a86f1029b57e532616897d90c12b"
+    },
+    {
       "path": "errors/errors.json",
-      "sha256": "af957a50ae0fdcab3f40324f9732f5cdc14fbbd321e320c3d0f2c9820691d670"
+      "sha256": "d0e50a3cf77bc89aeecff305dd8926b449f36c35f28623b900fe3c2f329718db"
     },
     {
       "path": "events/envelope/domain-event.schema.json",
       "sha256": "d4c6266a662cd42ff161e19f6d93f49d23698f9161d052defe4c6a83d52d73a9"
     },
     {
+      "path": "events/parties/consent-granted.schema.json",
+      "sha256": "ffa598171655a3edae6b35106a338395f925891e3945b88a54df6706ac719862"
+    },
+    {
+      "path": "events/parties/consent-withdrawn.schema.json",
+      "sha256": "aaf9d008d1841679524b2a19a3b352a66328dbed37bb188ef7105295373da892"
+    },
+    {
+      "path": "events/parties/land-role-asserted.schema.json",
+      "sha256": "f44cdb821393f6f6ab46e04be5845b3a2eae606f987a0cb83c9041397eb21c03"
+    },
+    {
+      "path": "events/parties/party-registered.schema.json",
+      "sha256": "6b0aed9fb36a8531262513b9f15500ab748b5af6ec697943db9a729d05b0de39"
+    },
+    {
       "path": "openapi/root.yaml",
-      "sha256": "ae300104d325cd4f8b35fbdf2c8bf41b1370e62e777b283b3f39dfe261034377"
+      "sha256": "7d23aaf8931a3e4f94831e5ffa5cdd02a141f110b0c66db90fe0adef636a7bf4"
     },
     {
       "path": "permissions/permissions.json",
-      "sha256": "5c6466897dfcb5d4624a75c83dec333ed1625f8ac6083e792a13190d87d777b5"
+      "sha256": "dae3824b4d452ba67c1b0ffe2a99b947ca054ffa68e485eb485a3701e35f066a"
     },
     {
       "path": "requirements/requirements.json",
-      "sha256": "4bc55bb20fd290d5fa4df530b0eb191b6680c58fcf50078c124aaaf5c30dc73c"
+      "sha256": "081ab3283250a9d0998e07a935de4a2ffce37866b55b098ea1b97b0c31f2291c"
     },
     {
       "path": "requirements/traceability.csv",
-      "sha256": "bed5e0b019ffefd4c9999d921dc88d1336a52886c86cabef1c9df05e65962cb6"
+      "sha256": "e4b5efc6888e09cc4b9b647dedc0a3b43c6bec2c22ce8b696dee44cd8d0daf44"
     },
     {
       "path": "schemas/core/money.schema.json",
       "sha256": "ce35e26dbab2f0584fc9764fe5ace56d725552172d944bf891eb579b2b60cb44"
+    },
+    {
+      "path": "schemas/parties/consent-grant.schema.json",
+      "sha256": "c45218ad04e2ee537629e3d42cbd0c944aa04df8005438d1de3952ee2014763e"
+    },
+    {
+      "path": "schemas/parties/land-role.schema.json",
+      "sha256": "c4a418ded486f1882320945bf9fae4becefa88740723b57908b962c47da0e976"
+    },
+    {
+      "path": "schemas/parties/party.schema.json",
+      "sha256": "11a56e04af397d791eb14e6a50720bbf00d77efcf111c48b2a6bc1b8ea143cad"
     },
     {
       "path": "scripts/validate_specifications.py",

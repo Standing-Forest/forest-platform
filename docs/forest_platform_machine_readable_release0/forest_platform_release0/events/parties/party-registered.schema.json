@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/events/parties/party-registered.schema.json",
+  "title": "PartyRegistered payload",
+  "description": "Payload for the PartyRegistered domain event. Carried inside the approved envelope (events/envelope/domain-event.schema.json), which supplies eventId, actor, correlationId, dataClassification and requirementIds.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "partyId",
+    "homeInstanceId",
+    "partyType",
+    "consentGrantId"
+  ],
+  "properties": {
+    "partyId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "homeInstanceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "partyType": {
+      "enum": [
+        "person",
+        "organization"
+      ]
+    },
+    "community": {
+      "type": "string"
+    },
+    "consentGrantId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "CONSENT-002: a party cannot be registered without a grant, so this is required in the event as well as in the request."
+    }
+  },
+  "_note": "displayName and contact are deliberately absent. Events are replayed, forwarded and retained widely; putting a person's name and phone number in every consumer's log is not defensible. Consumers that need identity should read the party under party.read, subject to the tenant check."
+}

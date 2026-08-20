@@ -8,7 +8,10 @@
  * production deployment fails closed until a real authenticator is wired.
  */
 import type { FastifyRequest } from "fastify";
+import { UnregisteredError } from "../errors/unregistered.js";
 import { registerContractGap } from "../spec/contract-gap.js";
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export type AssuranceLevel = "aal1" | "aal2" | "aal3";
 
@@ -65,13 +68,45 @@ export function devHeaderResolver(nodeEnv: string): PrincipalResolver {
       const id = header("x-actor-id");
       if (!id) return null;
 
+      // Actor and tenant ids reach UUID columns. Accepting free text here and
+      // letting the database reject it turns a caller mistake into a 500, so
+      // the shim refuses to build a principal it knows cannot be stored.
+      if (!UUID_PATTERN.test(id)) {
+        throw new UnregisteredError(
+          400,
+          "ACTOR_ID_INVALID",
+          "x-actor-id must be a UUID",
+          { received: id },
+        );
+      }
+
+      const instanceId = header("x-instance-id") ?? "";
+      if (instanceId && !UUID_PATTERN.test(instanceId)) {
+        throw new UnregisteredError(
+          400,
+          "INSTANCE_ID_INVALID",
+          "x-instance-id must be a UUID",
+          { received: instanceId },
+        );
+      }
+
+      const organizationId = header("x-organization-id") ?? "";
+      if (organizationId && !UUID_PATTERN.test(organizationId)) {
+        throw new UnregisteredError(
+          400,
+          "ORGANIZATION_ID_INVALID",
+          "x-organization-id must be a UUID",
+          { received: organizationId },
+        );
+      }
+
       const level = header("x-assurance-level") ?? "aal1";
 
       return {
         id,
         type: (header("x-actor-type") as Principal["type"]) ?? "user",
-        organizationId: header("x-organization-id") ?? "",
-        instanceId: header("x-instance-id") ?? "",
+        organizationId,
+        instanceId,
         assuranceLevel: isAssuranceLevel(level) ? level : "aal1",
         permissions: new Set(
           (header("x-permissions") ?? "")

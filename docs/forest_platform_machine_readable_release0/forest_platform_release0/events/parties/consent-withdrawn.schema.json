@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/events/parties/consent-withdrawn.schema.json",
+  "title": "ConsentWithdrawn payload",
+  "description": "A party withdrew a consent grant (CONSENT-003). Every consumer that processes data under the withdrawn uses must stop from withdrawnAt onwards. Carried inside the canonical envelope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["consentGrantId", "homeInstanceId", "partyId", "withdrawnUses", "withdrawnAt"],
+  "properties": {
+    "consentGrantId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "partyId": { "type": "string", "format": "uuid" },
+    "withdrawnUses": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The uses that are no longer permitted. Stated explicitly so a consumer does not have to re-read the grant to know what to stop doing.",
+      "items": {
+        "enum": ["conservation_payment", "public_reporting", "research", "partner_sharing"]
+      }
+    },
+    "withdrawnAt": { "type": "string", "format": "date-time" }
+  },
+  "_note": "Deliberately carries no withdrawalReason. A reason is optional for the party precisely so that withdrawing is never obstructed, and broadcasting one invites consumers to second-guess a decision that is not theirs to weigh."
+}

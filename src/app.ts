@@ -15,6 +15,8 @@ import { devHeaderResolver, type Principal, type PrincipalResolver } from "./cor
 import type { Database } from "./db/client.js";
 import type { Env } from "./config/env.js";
 import { registerProjectRoutes } from "./modules/forests/projects.routes.js";
+import { registerPartyRoutes } from "./modules/parties/parties.routes.js";
+import { registerLandRoleRoutes } from "./modules/parties/land-roles.routes.js";
 import { registerParcelRoutes } from "./modules/forests/parcels.routes.js";
 import { registerAiRoutes } from "./modules/ai/query.routes.js";
 
@@ -174,6 +176,8 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
 
   await app.register(async (instance) => {
     registerProjectRoutes(instance, { db, env });
+    registerPartyRoutes(instance, { db, env });
+    registerLandRoleRoutes(instance, { db, env });
     registerParcelRoutes(instance);
     registerAiRoutes(instance);
   }, { prefix: "/api/v1" });

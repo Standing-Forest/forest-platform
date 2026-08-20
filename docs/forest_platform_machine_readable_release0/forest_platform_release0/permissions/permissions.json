@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "permissions": [
     {
       "code": "project.create",
@@ -62,6 +62,73 @@
       "requirementIds": [
         "AI-002",
         "AI-004"
+      ]
+    },
+    {
+      "code": "party.register",
+      "resourceType": "party",
+      "action": "create",
+      "riskLevel": "high",
+      "requirementIds": [
+        "PARTY-001",
+        "CONSENT-002"
+      ]
+    },
+    {
+      "code": "party.read",
+      "resourceType": "party",
+      "action": "read",
+      "riskLevel": "medium",
+      "requirementIds": [
+        "PARTY-001",
+        "PARTY-003"
+      ]
+    },
+    {
+      "code": "party.update",
+      "resourceType": "party",
+      "action": "update",
+      "riskLevel": "high",
+      "requirementIds": [
+        "PARTY-001"
+      ]
+    },
+    {
+      "code": "land_role.assert",
+      "resourceType": "land_role",
+      "action": "create",
+      "riskLevel": "critical",
+      "requirementIds": [
+        "LAND-001",
+        "LAND-002"
+      ]
+    },
+    {
+      "code": "land_role.read",
+      "resourceType": "land_role",
+      "action": "read",
+      "riskLevel": "medium",
+      "requirementIds": [
+        "LAND-001",
+        "PARTY-003"
+      ]
+    },
+    {
+      "code": "consent.grant",
+      "resourceType": "consent_grant",
+      "action": "create",
+      "riskLevel": "critical",
+      "requirementIds": [
+        "CONSENT-002"
+      ]
+    },
+    {
+      "code": "consent.withdraw",
+      "resourceType": "consent_grant",
+      "action": "update",
+      "riskLevel": "high",
+      "requirementIds": [
+        "CONSENT-003"
       ]
     }
   ]

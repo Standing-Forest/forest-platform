@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/schemas/parties/land-role.schema.json",
+  "title": "LandRole",
+  "description": "A party holds a role over a parcel for a period, supported by evidence. This is where farmer, landowner and land controller are distinguished.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "landRoleId",
+    "homeInstanceId",
+    "partyId",
+    "parcelId",
+    "role",
+    "validFrom"
+  ],
+  "properties": {
+    "landRoleId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "homeInstanceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "partyId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "parcelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "BLOCKED: forests.parcels does not exist (GEO-001 has no tables). This reference cannot be enforced by a foreign key until it does."
+    },
+    "role": {
+      "enum": [
+        "farmer",
+        "landowner",
+        "land_controller"
+      ],
+      "description": "farmer: works the land. landowner: holds title in a formal registry. land_controller: holds authority to commit the land without formal title — customary authority, cooperative, council, concession or attorney. One party may hold several roles over the same parcel."
+    },
+    "authorityBasis": {
+      "type": "string",
+      "description": "Required when role is land_controller: on what basis authority is held. OPEN QUESTION 1 — customary authority, cooperative, concession and power of attorney are legally distinct and may deserve separate roles rather than a free-text field."
+    },
+    "conveysAuthorityToCommit": {
+      "type": "boolean",
+      "description": "Derived, stored for auditability: true for landowner and land_controller, false for farmer. LAND-002 requires at least one party with this true before conservation may be committed on a parcel."
+    },
+    "exclusive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this role claims to exclude others of the same role for the period. Overlapping non-exclusive claims are permitted so genuine disputes can be recorded rather than silently resolved at capture time."
+    },
+    "supportingEvidence": {
+      "type": "array",
+      "description": "Title deed, customary attestation, tenancy agreement, community minute. Referenced, never embedded (EVID-001/002).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidenceAssetId",
+          "checksumSha256"
+        ],
+        "properties": {
+          "evidenceAssetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "checksumSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "kind": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "assertedBy": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The actor who recorded this claim. A role is asserted by staff, not proven by the system."
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "role": {
+            "const": "land_controller"
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "then": {
+        "required": [
+          "authorityBasis"
+        ]
+      }
+    }
+  ]
+}

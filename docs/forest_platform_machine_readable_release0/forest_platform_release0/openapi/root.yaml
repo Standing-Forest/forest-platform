@@ -35,6 +35,95 @@ paths:
       responses:
         '202':
           description: Accepted
+  /parties:
+    post:
+      operationId: registerParty
+      summary: Register a person or organization, with their consent grant
+      x-domain-owner: field-operations
+      x-requirement-ids: [PARTY-001, CONSENT-002]
+      x-risk-level: high
+      x-audit-required: true
+      x-idempotency-required: true
+      responses:
+        '201':
+          description: Registered
+        '409':
+          description: PARTY_ALREADY_REGISTERED
+        '422':
+          description: CONSENT_GRANT_REQUIRED
+  /parties/{partyId}:
+    get:
+      operationId: readParty
+      summary: Read a party
+      description: >
+        The first operation reading an existing tenant-owned resource, which
+        makes the SEC-006 cross-tenant check reachable from HTTP.
+      x-domain-owner: field-operations
+      x-requirement-ids: [PARTY-001, PARTY-003, SEC-006]
+      x-risk-level: medium
+      x-audit-required: true
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The party as of now
+        '403':
+          description: Belongs to another tenant
+        '404':
+          description: Not found
+  /parcels/{parcelId}/land-roles:
+    post:
+      operationId: assertLandRole
+      summary: Assert that a party is the farmer, landowner or controller of a parcel
+      x-domain-owner: field-operations
+      x-requirement-ids: [LAND-001, LAND-002]
+      x-risk-level: critical
+      x-audit-required: true
+      x-idempotency-required: true
+      parameters:
+        - name: parcelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Role asserted
+        '409':
+          description: LAND_ROLE_CONFLICT
+  /parties/{partyId}/consent-grants/{consentGrantId}/withdrawal:
+    post:
+      operationId: withdrawConsent
+      summary: Withdraw a consent grant
+      description: >
+        Carries no step-up requirement and no approval policy by design. A
+        person withdrawing consent must never be obstructed by process.
+      x-domain-owner: consent
+      x-requirement-ids: [CONSENT-003]
+      x-risk-level: high
+      x-audit-required: true
+      parameters:
+        - name: partyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: consentGrantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Withdrawn; all processing under this grant stops
   /ai/query:
     post:
       operationId: queryGroundedAssistant

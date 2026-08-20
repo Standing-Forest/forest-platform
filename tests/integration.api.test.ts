@@ -297,7 +297,9 @@ describe("introspection endpoints", { skip: !reachable }, () => {
     const response = await app.inject({ method: "GET", url: "/internal/contract-gaps" });
     assert.equal(response.statusCode, 200);
     const body = response.json();
-    assert.equal(body.specVersion, "0.1.0");
+    // Not pinned to a literal: the version moves every time a contract is
+    // approved, and asserting it here only creates busywork.
+    assert.match(body.specVersion, /^\d+\.\d+\.\d+$/);
     assert.ok(body.gaps.length > 0);
   });
 });

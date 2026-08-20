@@ -50,16 +50,36 @@ the approved SQL then exits), and `api`.
 | Operation | Behavior |
 | --- | --- |
 | `POST /api/v1/projects` | **Implemented.** Creates the project and its `ForestProjectCreated` event in one transaction. |
+| `POST /api/v1/parties` | **Implemented.** Registers a person or organization together with their consent grant, in one transaction — a party cannot exist having consented to nothing. |
+| `GET /api/v1/parties/{partyId}` | **Implemented.** The first operation reading an existing tenant-owned resource, so SEC-006's cross-tenant check is finally reachable over HTTP. |
+| `POST /api/v1/parcels/{parcelId}/land-roles` | **Implemented.** Records who is the farmer, landowner or land controller. Only the latter two convey authority to commit the land. |
+| `GET /api/v1/parcels/{parcelId}/land-roles` | **Implemented.** Answers whether anyone has authority to commit this parcel. |
+| `POST /api/v1/parties/{id}/consent-grants/{id}/withdrawal` | **Implemented.** Ends the grant and stops all future processing; deletes nothing. |
 | `POST /api/v1/parcels/:parcelId/boundaries` | Authorization and the `x-idempotency-required` contract are enforced, then **409** — no `forests.parcel_boundaries` table or geometry schema exists. |
 | `POST /api/v1/ai/query` | **409** — no citation schema, evidence store, or grounding contract exists. Answering ungrounded would violate AI-002 and AI-004. |
 | `GET /health` | Liveness plus the loaded spec version. |
 | `GET /internal/contract-gaps` | Everything this deployment knows it cannot do. |
 | `GET /internal/specification` | The registries actually loaded, for operator verification. |
 
-Only `POST /projects` is fully specified: `forests.projects` exists in the
-approved SQL and `traceability.csv` names its event. Even there the OpenAPI
-declares no `requestBody`, so the request shape is *derived* from the approved
-table columns — recorded as a gap rather than treated as settled.
+### Three things worth knowing about what is implemented
+
+**Farmer, landowner and land controller are roles over land, not three kinds of
+person.** They overlap constantly — a smallholder who works their own plot is
+both farmer and landowner, while community land often has a controller with
+authority to commit it who neither owns nor farms it. Modelling them as a
+relationship is what makes the question that actually matters answerable: *who
+may consent to conservation on this parcel?*
+
+**Consent is enforced, not merely recorded.** An authority-bearing land role
+cannot be asserted for a party who has not consented to conservation payment, or
+who has withdrawn that consent. Withdrawal is deliberately not gated behind
+step-up or approval — a person withdrawing consent must never be obstructed by
+process.
+
+**Land roles currently name parcels that cannot be verified**, because
+`forests.parcels` does not exist yet. The reference has no foreign key. This is
+recorded as a contract gap, and `GET /parcels/{id}/land-roles` reports
+`parcelExistenceVerified: false` rather than implying otherwise.
 
 ## The specification is the source of truth at runtime
 

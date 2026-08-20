@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "baseline",
   "requirements": [
     {
@@ -99,6 +99,55 @@
       "priority": "critical",
       "status": "approved",
       "owner": "quality"
+    },
+    {
+      "id": "PARTY-001",
+      "title": "Party records are bitemporal and tenant-scoped",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "field-operations"
+    },
+    {
+      "id": "PARTY-002",
+      "title": "Identity evidence is referenced, never embedded",
+      "priority": "high",
+      "status": "approved",
+      "owner": "evidence"
+    },
+    {
+      "id": "PARTY-003",
+      "title": "Party reads are confined to the owning tenant",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "security"
+    },
+    {
+      "id": "LAND-001",
+      "title": "Land roles distinguish farmer, landowner and land controller",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "field-operations"
+    },
+    {
+      "id": "LAND-002",
+      "title": "Authority to commit land is established before conservation begins",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "field-operations"
+    },
+    {
+      "id": "CONSENT-002",
+      "title": "Enrollment requires a recorded consent grant naming permitted uses",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "consent"
+    },
+    {
+      "id": "CONSENT-003",
+      "title": "Consent withdrawal halts processing without destroying history",
+      "priority": "critical",
+      "status": "approved",
+      "owner": "consent"
     }
   ]
 }

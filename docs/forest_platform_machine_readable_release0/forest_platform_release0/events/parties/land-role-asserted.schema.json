@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/events/parties/land-role-asserted.schema.json",
+  "title": "LandRoleAsserted payload",
+  "description": "Payload for the LandRoleAsserted domain event. Carried inside the approved envelope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "landRoleId",
+    "homeInstanceId",
+    "partyId",
+    "parcelId",
+    "role",
+    "conveysAuthorityToCommit",
+    "validFrom"
+  ],
+  "properties": {
+    "landRoleId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "homeInstanceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "partyId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "parcelId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "role": {
+      "enum": [
+        "farmer",
+        "landowner",
+        "land_controller"
+      ]
+    },
+    "authorityBasis": {
+      "type": "string"
+    },
+    "conveysAuthorityToCommit": {
+      "type": "boolean"
+    },
+    "exclusive": {
+      "type": "boolean"
+    },
+    "supersedesLandRoleId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "description": "Set when this assertion replaces an earlier one — land sold, tenancy ended, controller replaced."
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "_note": "A downstream consumer deciding whether conservation may be committed on a parcel should rely on conveysAuthorityToCommit rather than re-deriving it from role, so the rule lives in one place."
+}

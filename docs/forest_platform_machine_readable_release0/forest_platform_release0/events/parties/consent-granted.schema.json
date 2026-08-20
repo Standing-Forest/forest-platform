@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forest.example/events/parties/consent-granted.schema.json",
+  "title": "ConsentGranted payload",
+  "description": "A party agreed to a defined set of uses of their data and participation (CONSENT-002). Carried inside the canonical envelope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "consentGrantId",
+    "homeInstanceId",
+    "partyId",
+    "permittedUses",
+    "grantedAt",
+    "languageTag",
+    "method"
+  ],
+  "properties": {
+    "consentGrantId": { "type": "string", "format": "uuid" },
+    "homeInstanceId": { "type": "string", "format": "uuid" },
+    "partyId": { "type": "string", "format": "uuid" },
+    "scopeParcelId": { "type": ["string", "null"], "format": "uuid" },
+    "permittedUses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["conservation_payment", "public_reporting", "research", "partner_sharing"]
+      }
+    },
+    "grantedAt": { "type": "string", "format": "date-time" },
+    "languageTag": {
+      "type": "string",
+      "description": "Consent obtained in a language the party does not read is not consent, so downstream consumers can check this rather than assume it."
+    },
+    "method": {
+      "enum": ["written_signature", "thumbprint", "witnessed_verbal", "digital_signature"]
+    }
+  },
+  "_note": "Carries no evidence asset reference and no witness identity. The grant record holds those; an event stream is retained and forwarded widely, and a consent form is a document about a person."
+}

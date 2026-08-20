@@ -21,6 +21,8 @@ import "../src/core/events/outbox.js";
 import "../src/modules/ai/query.routes.js";
 import "../src/modules/forests/parcels.routes.js";
 import "../src/modules/forests/projects.routes.js";
+import "../src/modules/parties/land-roles.routes.js";
+import "../src/modules/parties/parties.routes.js";
 
 import { listContractGaps } from "../src/core/spec/contract-gap.js";
 import { requirements, specVersion } from "../src/core/spec/registry.js";

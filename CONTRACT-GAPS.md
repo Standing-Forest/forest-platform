@@ -1,6 +1,6 @@
 # Contract gaps
 
-Specification package version: **0.1.0**
+Specification package version: **0.2.0**
 
 Release 0 is explicitly a foundation package, not the complete production
 contract set. DEV-AI-001 forbids coding agents from inventing the missing
@@ -77,6 +77,16 @@ Blocks: DEV-AI-001 (Coding agents may not invent missing contracts)
 
 The approved SQL declares unique, foreign key and CHECK constraints, but the error catalog has no codes for violating them. Without these, a caller-caused conflict is indistinguishable from a server fault.
 
+### land role parcel references are unenforced
+
+Missing artifacts:
+
+- `table forests.parcels (GEO-001)`
+
+Blocks: LAND-001 (Land roles distinguish farmer, landowner and land controller), LAND-002 (Authority to commit land is established before conservation begins)
+
+A land role names the parcel it applies to, but forests.parcels does not exist, so the reference has no foreign key and a role can be asserted over a parcel id that corresponds to nothing. Approving the land-and-trees contract creates the table and adds the constraint. Until then, treat parcel ids in parties.land_roles as unverified.
+
 ### POST /ai/query (queryGroundedAssistant)
 
 Missing artifacts:
@@ -130,16 +140,6 @@ Blocks: SEC-006 (Tenant isolation)
 
 Rate limiting is in-memory, so the limit applies per process. Running more than one instance multiplies the effective limit by the instance count. A shared store (Redis or equivalent) is needed before scaling horizontally, and the 429 response currently uses an unregistered code.
 
-### SEC-006 cross-tenant access enforcement
-
-Missing artifacts:
-
-- `an OpenAPI operation that reads or mutates an existing tenant-owned resource`
-
-Blocks: SEC-006 (Tenant isolation)
-
-Writes are isolated by construction — home_instance_id comes from the authenticated principal and the request schema is closed, so a caller cannot place a resource in another tenant. But all three declared operations either create or are stubs, so no route can pass resourceInstanceId and the cross-tenant check below is never reached from HTTP. It is unit-tested directly. The first read/update operation added must wire it in; see tests/integration.tenancy.test.ts.
-
 ## Requirements blocked, by id
 
 | Requirement | Title | Blocked by |
@@ -152,4 +152,6 @@ Writes are isolated by construction — home_instance_id comes from the authenti
 | EVID-001 | Material claims trace to evidence | POST /parcels/{parcelId}/boundaries (submitParcelBoundary) |
 | FIN-001 | Append-only double-entry ledger | dual-control approval |
 | GEO-001 | Append-only parcel boundaries | dual-control approval; POST /parcels/{parcelId}/boundaries (submitParcelBoundary) |
-| SEC-006 | Tenant isolation | authentication; authorization failure responses; rate limiting across multiple instances; SEC-006 cross-tenant access enforcement |
+| LAND-001 | Land roles distinguish farmer, landowner and land controller | land role parcel references are unenforced |
+| LAND-002 | Authority to commit land is established before conservation begins | land role parcel references are unenforced |
+| SEC-006 | Tenant isolation | authentication; authorization failure responses; rate limiting across multiple instances |

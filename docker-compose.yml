@@ -70,7 +70,9 @@ services:
       LOG_LEVEL: info
       PORT: "3000"
     ports:
-      - "3000:3000"
+      # Host port is overridable so this stack can run alongside another app
+      # already holding 3000:  API_PORT=3100 docker compose up -d
+      - "${API_PORT:-3000}:3000"
     depends_on:
       db:
         condition: service_healthy

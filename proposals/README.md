@@ -18,16 +18,31 @@ code has been built against any of it.
 
 | Proposal | Covers | Status |
 | --- | --- | --- |
-| [parties-and-land-roles](./parties-and-land-roles/) | Farmer, landowner and land controller records; land roles; consent; enrollment | **Draft — needs review** |
+| ~~[parties-and-land-roles](./parties-and-land-roles/)~~ | Farmer, landowner and land controller records; land roles; consent; enrollment | **APPROVED and implemented** — see below |
 | [land-and-trees](./land-and-trees/) | Evidence assets, parcels, boundaries, trees and observation history | **Draft — needs review** |
 | [governance-approvals](./governance-approvals/) | Staff roles, approval policies and dual-control approval records | **Draft — needs review** |
 | [finance](./finance/) | Double-entry ledger, sponsorship, card payments in, approved payouts out | **Draft — needs review + legal input** |
 
-Migrations are numbered to apply in order after the approved
-`0001_foundation.sql`: `0002` parties, `0003` land and trees, `0004`
-governance, `0005` finance. All five have been applied together to a scratch
-PostGIS database and their constraints exercised; none has been applied to a
-real one.
+**parties-and-land-roles was approved and is now live.** Its artifacts moved
+into the approved package at specification version `0.2.0`, and the platform
+implements them: `POST /parties`, `GET /parties/{partyId}`,
+`POST /parcels/{parcelId}/land-roles` and consent withdrawal all work. The draft
+files are kept here for the record — the authoritative copies are in
+`docs/.../forest_platform_release0/`, and the open questions it raised remain
+open. Two are worth restating:
+
+- **Consent withdrawal versus permanent history is still unresolved.**
+  Withdrawal ends the grant and blocks all future processing; it deletes
+  nothing. That may not satisfy a legal right to erasure.
+- **Land roles name parcels that cannot be verified**, because
+  `forests.parcels` does not exist. Approving `land-and-trees` creates the
+  table and adds the foreign key.
+
+Remaining migrations are numbered to apply in order after the approved
+`0001_foundation.sql` and `0002_parties.sql`: `0003` land and trees, `0004`
+governance, `0005` finance. All have been applied together to a scratch PostGIS
+database and their constraints exercised; none of the unapproved ones has been
+applied to a real one.
 
 The finance proposal carries obligations that are not engineering decisions —
 fundraising registration, tax receipts, payee KYB, sanctions screening and

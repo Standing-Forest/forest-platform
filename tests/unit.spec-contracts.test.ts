@@ -33,9 +33,29 @@ const validEventInput = {
 
 describe("specification registry", () => {
   it("loads the approved registries", () => {
-    assert.equal(requirements.size, 14);
-    assert.equal(permissions.size, 6);
-    assert.equal(errorDefinitions.size, 6);
+    // Asserting exact counts made this fail every time a contract was approved,
+    // which is noise rather than signal. What matters is that each registry
+    // loaded and that entries the code depends on are present.
+    assert.ok(requirements.size > 0);
+    assert.ok(permissions.size > 0);
+    assert.ok(errorDefinitions.size > 0);
+
+    for (const id of ["ARCH-001", "ARCH-005", "SEC-006", "DEV-AI-001", "PARTY-001", "CONSENT-003"]) {
+      assert.ok(requirements.has(id), `requirement ${id} should be approved`);
+    }
+    for (const code of ["project.create", "party.register", "party.read", "land_role.assert"]) {
+      assert.ok(permissions.has(code), `permission ${code} should be approved`);
+    }
+    for (const code of ["SPECIFICATION_CONTRACT_MISSING", "CONSENT_SCOPE_NOT_PERMITTED"]) {
+      assert.ok(errorDefinitions.has(code), `error ${code} should be approved`);
+    }
+  });
+
+  it("marks every loaded requirement as approved, never proposed", () => {
+    // Draft artifacts carry status "proposed". If one reaches the approved
+    // package without being promoted, that is a broken approval, not a detail.
+    const notApproved = [...requirements.values()].filter((r) => r.status !== "approved");
+    assert.deepEqual(notApproved.map((r) => r.id), []);
   });
 });
 
