@@ -81,7 +81,7 @@ Windows-generated lock omits peer entries for optional native dependencies and
 breaks `npm ci` inside the container image:
 
 ```bash
-docker run --rm -v "$PWD:/app" -w /app node:22-alpine npm install --package-lock-only
+docker run --rm -v "$PWD:/app" -w /app node:24-alpine npm install --package-lock-only
 ```
 
 ## Testing against the database

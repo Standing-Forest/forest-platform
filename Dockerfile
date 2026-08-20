@@ -1,7 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # ---- build ----------------------------------------------------------------
-FROM node:22-alpine AS builder
+# Node 24 ("Krypton") is the active LTS line. Deliberately not tracking Current:
+# this image is meant to hold land tenure records and move money, so it should
+# sit on a release that receives security backports for 30 months.
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -15,7 +18,7 @@ COPY docs ./docs
 RUN npm run build
 
 # ---- runtime --------------------------------------------------------------
-FROM node:22-alpine AS runtime
+FROM node:24-alpine AS runtime
 WORKDIR /app
 
 # Fail closed by default: the app refuses to start under NODE_ENV=production

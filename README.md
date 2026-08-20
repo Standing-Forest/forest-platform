@@ -213,7 +213,7 @@ Two differences are expected and not drift: `CREATE EXTENSION postgis`
 peer entries for optional native dependencies and breaks `npm ci` in the image:
 
 ```bash
-docker run --rm -v "$PWD:/app" -w /app node:22-alpine npm install --package-lock-only
+docker run --rm -v "$PWD:/app" -w /app node:24-alpine npm install --package-lock-only
 ```
 
 ## Layout
